@@ -1,3 +1,3 @@
-# Cox screening
+# Enet screening
 
-Developing sequential safe screening method for lasso penalized cox regression.
+Developing sequential safe screening method for elastic net.
