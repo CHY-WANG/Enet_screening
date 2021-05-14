@@ -268,12 +268,33 @@ then $T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\ga
         \begin{aligned}
             T^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\equiv\underset{t\geq 0}{\mathrm{min}}\,T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})=T^\xi_j(\lambda_1,\lambda_0,t*;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\\
             where\quad t^*=\begin{cases}
-            0,\hfill -\frac{1}{2}\tilde{\boldsymbol x}_j^T\boldsymbol v_1+\frac{1}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\geq ||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_1||_2\\
-            \left(\frac{\boldsymbol v_1^T\boldsymbol v_2}{||\boldsymbol v_1||_2^2}+\sqrt{\frac{||\boldsymbol v_1||_2^2||\boldsymbol v_2||_2^2-(\boldsymbol v_1^T\boldsymbol v_2)^2}{||\boldsymbol x_j||_2^2||\boldsymbol v_1||_2^2-\left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)^2}}\frac{\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2}{||\boldsymbol v_1||_2^2}\right)\vee 0,\hfill o.w.
+            0,\hfill \left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)^2\geq ||\tilde{\boldsymbol x}_j||^2_2||\boldsymbol v_1||^2_2\\
+            \left(\frac{\boldsymbol v_1^T\boldsymbol v_2}{||\boldsymbol v_1||_2^2}+\frac{\sqrt{||\boldsymbol v_1||_2^2||\boldsymbol v_2||_2^2-(\boldsymbol v_1^T\boldsymbol v_2)^2}\left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)}{||\boldsymbol v_1||_2^2\sqrt{||\boldsymbol x_j||_2^2||\boldsymbol v_1||_2^2-\left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)^2}}\right)\vee 0,\hfill\quad o.w.
             \end{cases}
         \end{aligned}
     \end{gather}
 \end{theorem}
+
+If we define $\boldsymbol r_{\lambda_0}\equiv \boldsymbol y-X\boldsymbol\beta_{\lambda_0}$, then the results above can be expressed in primal variables:
+
+\begin{gather}
+    \begin{aligned}
+        T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})= \frac{\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}}{\lambda_0}+ \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t-1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}+\frac{t+1}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{\lambda_0}||_2\\
+        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||X\boldsymbol\beta_{\lambda_0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2-2(1-t)c\lambda_0 \boldsymbol y^TX\boldsymbol\beta_{\lambda_0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta||_2^2}
+    \end{aligned}
+\end{gather}
+
+$t^*=0$ if
+
+\begin{equation}
+    \frac{1}{\lambda_0^2}\left(||\boldsymbol x_j||_2^2||X\boldsymbol\beta_{\lambda_0}||_2^2-(\boldsymbol x_j^TX\boldsymbol\beta_{\lambda_0})^2\right)+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol x_j||_2^2||\boldsymbol\beta_{\lambda_0}||_2^2+2\sqrt{c^2\lambda_1n(1-\alpha)}\boldsymbol \xi x_j^TX\boldsymbol\beta_{\lambda_0}||\boldsymbol x_j||_2||\boldsymbol\beta_{\lambda_0}||_2\leq 0,
+\end{equation}
+
+else $t^*=$
+
+\begin{equation}
+    
+\end{equation}
 
 \subsection{Sequential Safe Screening Rule}
 
@@ -526,7 +547,7 @@ It is also clear that $\boldsymbol v_1$ and $\boldsymbol v_2$ are not colinear a
     \end{aligned}
 \end{gather}
 
-If $-\frac{1}{2}\tilde{\boldsymbol x}_j^T\boldsymbol v_1+\frac{1}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\geq ||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_1||_2$, the minimum will be obtained at $t=0$. Else, we have $-\frac{1}{2}\tilde{\boldsymbol x}_j^T\boldsymbol v_1+\frac{1}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2>- ||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_1||_2$ by Cauchy-Schwartz, and squaring both sides of \eqref{eq:2.4.1} and simplify it:
+If $-\tilde{\boldsymbol x}_j^T\boldsymbol v_1+||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\geq ||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_1||_2$, the minimum will be obtained at $t=0$. Else, we have $-\tilde{\boldsymbol x}_j^T\boldsymbol v_1+||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2>- ||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_1||_2$ by Cauchy-Schwartz, and squaring both sides of \eqref{eq:2.4.1} and simplify it:
 
 \begin{gather}
     \begin{aligned}
@@ -627,7 +648,7 @@ Take the second derivative:
     \frac{\partial^2}{\partial t^2}=||\boldsymbol x_j||_2\frac{||\boldsymbol v_1||^2_2||\boldsymbol v_2-t\boldsymbol v_1||^2_2-\left((\boldsymbol v_2-t\boldsymbol v_1)^T\boldsymbol v_1\right)^2}{2||\boldsymbol v_2-t\boldsymbol v_1||^3_2}>0
 \end{equation}
 
-If $\boldsymbol x_j$ and $\boldsymbol v_1$ are positively colinear, \eqref{eq:edppobj} will be minimized when $t\xrightarrow[]{}\infty$ and the minimum is $\boldsymbol x_j^T\boldsymbol\theta_{\lambda_0}+\frac{1}{2}\boldsymbol x_j^T \boldsymbol v_2-\frac{||\boldsymbol x_j||_2 \boldsymbol v_1^T \boldsymbol v_2}{2||\boldsymbol v_1||_2 }$. If $\boldsymbol x_j$ and $\boldsymbol v_1$ are negatively colinear, \eqref{eq:edppobj} will be minimized when $t=0$. If $\boldsymbol x_j^T \boldsymbol v_1=0$, solution to \eqref{eq:edppdt} will be $\frac{\boldsymbol v_1^T \boldsymbol v_2}{||\boldsymbol v_1||_2^2}$.  Else, square the two terms \eqref{eq:edppdt} and set them to equal:
+If $\boldsymbol x_j$ and $\boldsymbol v_1$ are positively colinear, \eqref{eq:edppobj} will be minimized when $t\xrightarrow[]{}\infty$ and the minimum is $\boldsymbol x_j^T\boldsymbol\theta_{\lambda_0}+\frac{1}{2}\boldsymbol x_j^T \boldsymbol v_2-\frac{||\boldsymbol x_j||_2 \boldsymbol v_1^T \boldsymbol v_2}{2||\boldsymbol v_1||_2 }$. If $\boldsymbol x_j$ and $\boldsymbol v_1$ are negatively colinear, \eqref{eq:edppobj} will be minimized when $t=0$. If $\boldsymbol x_j^T \boldsymbol v_1=0$, solution to \eqref{eq:edppdt} will be $\frac{\boldsymbol v_1^T \boldsymbol v_2}{||\boldsymbol v_1||_2^2}$. Else, square the two terms \eqref{eq:edppdt} and set them to equal:
 
 \begin{gather}
     \begin{aligned}
