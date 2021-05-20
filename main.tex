@@ -13,7 +13,7 @@ where $\boldsymbol\beta\in\mathbb{R}^p$ is the coefficient vectors for the $p$ f
 
 \begin{gather}
         \label{eq:dualtheta}
-        \underset{\boldsymbol\theta\in \mathbb{R}^{ n},\boldsymbol\gamma\in\mathbb{R}^p}{\mathrm{max}}g_\lambda(\boldsymbol\theta,\boldsymbol\gamma)\equiv\frac{1}{2}||y||_2^2-\frac{\lambda^2}{2}\left\Vert\boldsymbol\theta-\frac{\boldsymbol y}{\lambda}\right\Vert_2^2-\frac{\lambda^2}{2}||\boldsymbol\gamma||_2^2\\
+        \underset{\boldsymbol\theta\in \mathbb{R}^{ n},\boldsymbol\gamma\in\mathbb{R}^p}{\mathrm{max}}g_\lambda(\boldsymbol\theta,\boldsymbol\gamma)\equiv\frac{1}{2}||\boldsymbol y||_2^2-\frac{\lambda^2}{2}\left\Vert\boldsymbol\theta-\frac{\boldsymbol y}{\lambda}\right\Vert_2^2-\frac{\lambda^2}{2}||\boldsymbol\gamma||_2^2\\
         \begin{aligned}s.t.\quad (\boldsymbol\theta,\boldsymbol\gamma)\in \mathcal{F}_\lambda\equiv\{(\boldsymbol\theta,\boldsymbol\gamma):\quad
             &||X^T\boldsymbol\theta-\sqrt{n(1-\alpha)\lambda}\boldsymbol\gamma||_\infty\leq n\alpha\}\nonumber,
         \end{aligned}
@@ -275,25 +275,25 @@ then $T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\ga
     \end{gather}
 \end{theorem}
 
-If we define $\boldsymbol r_{\lambda_0}\equiv \boldsymbol y-X\boldsymbol\beta_{\lambda_0}$, then the results above can be expressed in primal variables:
+If we define $\boldsymbol r_{\lambda_0}\equiv \boldsymbol y-X\boldsymbol\beta_{\lambda_0}$ and $\hat{\boldsymbol y}_{\lambda_0}\equiv X\boldsymbol\beta_{\lambda_0}$, then the results above can be expressed in primal variables:
 
 \begin{gather}
     \begin{aligned}
         T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})= \frac{\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}}{\lambda_0}+ \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t-1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}+\frac{t+1}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{\lambda_0}||_2\\
-        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||X\boldsymbol\beta_{\lambda_0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2-2(1-t)c\lambda_0 \boldsymbol y^TX\boldsymbol\beta_{\lambda_0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta||_2^2}
+        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2-2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta||_2^2}
     \end{aligned}
 \end{gather}
 
 $t^*=0$ if
 
 \begin{equation}
-    \frac{1}{\lambda_0^2}\left(||\boldsymbol x_j||_2^2||X\boldsymbol\beta_{\lambda_0}||_2^2-(\boldsymbol x_j^TX\boldsymbol\beta_{\lambda_0})^2\right)+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol x_j||_2^2||\boldsymbol\beta_{\lambda_0}||_2^2+2\sqrt{c^2\lambda_1n(1-\alpha)}\boldsymbol \xi x_j^TX\boldsymbol\beta_{\lambda_0}||\boldsymbol x_j||_2||\boldsymbol\beta_{\lambda_0}||_2\leq 0,
+    \frac{1}{\lambda_0^2}\left(||\boldsymbol x_j||_2^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2-(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2\right)+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol x_j||_2^2||\boldsymbol\beta_{\lambda_0}||_2^2+2\sqrt{c^2\lambda_1n(1-\alpha)}\boldsymbol \xi x_j^T\hat{\boldsymbol y}_{\lambda_0}||\boldsymbol x_j||_2||\boldsymbol\beta_{\lambda_0}||_2\leq 0,
 \end{equation}
 
 else $t^*=$
 
 \begin{equation}
-    
+    \,
 \end{equation}
 
 \subsection{Sequential Safe Screening Rule}
@@ -492,7 +492,7 @@ Note $\boldsymbol c_1-\boldsymbol c_0'=\binom{*}{\sqrt{\frac{\lambda_1}{\lambda_
 The problem \eqref{eq:ttildexi.alt} is equivalent to maximizing
 \begin{equation}
     \label{eq:2.2.1}
-    \boldsymbol b_0^Tz+a_0||\boldsymbol z-\boldsymbol c_0'||_2
+    \boldsymbol b_0^T\boldsymbol z+a_0||\boldsymbol z-\boldsymbol c_0'||_2
 \end{equation}
 
 subject to the ball constraint $||\boldsymbol z-\boldsymbol c_1||_2^2\leq r_1^2$.
@@ -622,12 +622,12 @@ EDPP says $\forall t\geq 0$
     \left\Vert\boldsymbol\theta_{\lambda_1}-\left(\boldsymbol\theta_{\lambda_0}+\frac{1}{2}(\boldsymbol v_2-t\boldsymbol v_1)\right)\right\Vert_2^2\leq\frac{1}{4}||\boldsymbol v_2-t\boldsymbol v_1||_2^2,
 \end{equation}
 
-where $\boldsymbol v_1^T\boldsymbol v_2\geq0$. That means
+where when $\lambda_0<\lambda_{\max}$, $\boldsymbol v_1=\frac{\boldsymbol y}{\lambda_0}-\boldsymbol\theta_{\lambda_0}$, $\boldsymbol v_2=\frac{\boldsymbol y}{\lambda_1}-\boldsymbol\theta_{\lambda_0}$ and $\boldsymbol v_1^T\boldsymbol v_2\geq0$. That means
 
 \begin{gather}
     \label{eq:edppobj}
     \begin{aligned}
-        \boldsymbol x_j^T\boldsymbol\theta_{\lambda_1}&\leq \boldsymbol x_j^T\boldsymbol\theta_{\lambda_0}+\frac{1}{2}\boldsymbol x_j^T(\boldsymbol v_2-t\boldsymbol v_1)+\frac{1}{2}||\boldsymbol x_j||_2||\boldsymbol v_2-t\boldsymbol v_1||_2\\
+        \boldsymbol x_j^T\boldsymbol\theta_{\lambda_1}&\leq T^\xi_j(\lambda_1,\lambda_0,t)\equiv \boldsymbol x_j^T\boldsymbol\theta_{\lambda_0}+\frac{1}{2}\boldsymbol x_j^T(\boldsymbol v_2-t\boldsymbol v_1)+\frac{1}{2}||\boldsymbol x_j||_2||\boldsymbol v_2-t\boldsymbol v_1||_2\\
         %&=\boldsymbol x_j^T\boldsymbol\theta_{\lambda_0}+\frac{||\boldsymbol x_j||_2||\boldsymbol v_2-t\boldsymbol v_1||}{2}\left(\frac{\boldsymbol x_j^T(\boldsymbol v_2-t\boldsymbol v_1)}{||\boldsymbol x_j||_2||\boldsymbol v_2-t\boldsymbol v_1||}+1\right)
     \end{aligned}
 \end{gather}
@@ -674,7 +674,51 @@ If $\boldsymbol x_j$ and $\boldsymbol v_1$ are positively colinear, \eqref{eq:ed
 so the solution to \eqref{eq:edppquad} will be:
 
 \begin{equation}
-    t=\left(\frac{\boldsymbol v_1^T\boldsymbol v_2}{||\boldsymbol v_1||_2^2}+\sqrt{\frac{||\boldsymbol v_1||_2^2||\boldsymbol v_2||_2^2-(\boldsymbol v_1^T\boldsymbol v_2)^2}{||\boldsymbol x_j||_2^2||\boldsymbol v_1||_2^2-(\boldsymbol x_j^T\boldsymbol v_1)^2}}\frac{\boldsymbol x_j^T\boldsymbol v_1}{||\boldsymbol v_1||_2^2}\right)\vee 0.
+    t^*=\left(\frac{\boldsymbol v_1^T\boldsymbol v_2}{||\boldsymbol v_1||_2^2}+\sqrt{\frac{||\boldsymbol v_1||_2^2||\boldsymbol v_2||_2^2-(\boldsymbol v_1^T\boldsymbol v_2)^2}{||\boldsymbol x_j||_2^2||\boldsymbol v_1||_2^2-(\boldsymbol x_j^T\boldsymbol v_1)^2}}\frac{\boldsymbol x_j^T\boldsymbol v_1}{||\boldsymbol v_1||_2^2}\right)\vee 0.
+\end{equation}
+
+This form of solution also covers the cases when $\boldsymbol v_1,\boldsymbol v_2$ are colinear or $\boldsymbol x_j^T \boldsymbol v_1=0$.
+
+If we define $\boldsymbol r_{\lambda_0}\equiv \boldsymbol y-X\boldsymbol\beta_{\lambda_0}$ and $\hat{\boldsymbol y}_{\lambda_0}\equiv X\boldsymbol\beta_{\lambda_0}$, then the results above can be expressed in primal variables:
+
+\begin{gather}
+    \begin{aligned}
+        T^\xi_j(\lambda_1,\lambda_0,t)= \frac{\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}}{\lambda_0}+ \frac{c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{1-t}{2\lambda_0}\xi \boldsymbol x_j^T \hat{\boldsymbol y}_{\lambda_0}\\
+        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}}
+    \end{aligned}
+\end{gather}
+
+If $\boldsymbol y^T \hat{\boldsymbol y}_{\lambda_0}=||\boldsymbol y||_2|| \hat{\boldsymbol y}_{\lambda_0}||_2$ or $(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2<||\boldsymbol x_j||_2||\hat{\boldsymbol y}_{\lambda_0}||_2^2$,
+
+\begin{equation}
+    t^*=\left(1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}}{||\hat{\boldsymbol y}_{\lambda_0}||_2^2}+c\lambda_0\sqrt{\frac{||\boldsymbol y||_2^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2-(\boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0})^2}{||\boldsymbol x_j||_2^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2-(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2}}\frac{\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}}{||\hat{\boldsymbol y}_{\lambda_0}||_2^2}\right)\vee 0.
+\end{equation}
+
+Else, $t^*=0$ if $\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}=-||\boldsymbol x_j||_2||\hat{\boldsymbol y}_{\lambda_0}||_2$ and $t^*=\infty$ if $\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}=||\boldsymbol x_j||_2||\hat{\boldsymbol y}_{\lambda_0}||_2$ with
+
+\begin{equation}
+    T^\xi_j(\lambda_1,\lambda_0,t)=\frac{\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}}{\lambda_0}+\frac{c}{2}\xi\boldsymbol x_j^T\boldsymbol y-\frac{c||\boldsymbol x_j||_2\boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}}{2||\hat{\boldsymbol y}_{\lambda_0}||_2}
+\end{equation}
+
+When $\lambda_0=\lambda_{\max}=\frac{|\boldsymbol x_*^T\boldsymbol y|}{n}$, $\boldsymbol v_1=sign(\boldsymbol x_*^T\boldsymbol y)\boldsymbol x_*$ and $\boldsymbol v_2=c\boldsymbol y$. If we define $\hat{\boldsymbol y}_{\lambda_0}\equiv \lambda_0sign(\boldsymbol x_*^T\boldsymbol y) \boldsymbol x_*$
+
+\begin{gather}
+    \begin{aligned}
+        T^\xi_j(\lambda_1,\lambda_0,t)= \frac{\xi \boldsymbol x_j^T \boldsymbol y}{\lambda_0}+ \frac{c}{2}\boldsymbol x_j^T\boldsymbol y-\frac{t}{2\lambda_0}\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}\\
+        +\frac{||\boldsymbol x_j||_2}{2}\sqrt{t^2||\boldsymbol x_*||_2^2+c^2||\boldsymbol y||_2^2-2tc\lambda_0n}.
+    \end{aligned}
+\end{gather}
+
+If $n\lambda_0=||\boldsymbol x_*||_2||\boldsymbol y||_2$ or $(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2<\lambda_0^2||\boldsymbol x_j||_2^2||\boldsymbol x_*||_2^2$
+
+\begin{equation}
+    t^*=\left(\frac{c\lambda_0n}{||\boldsymbol x_*||_2^2}+c\sqrt{\frac{||\boldsymbol y||_2^2||\boldsymbol x_*||_2^2-n^2\lambda_0^2}{\lambda_0^2||\boldsymbol x_j||_2^2||\boldsymbol x_*||_2^2-(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2}}\frac{\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}}{||\boldsymbol x_*||_2^2}\right)\vee 0.
+\end{equation}
+
+Else, $t^*=0$ if $\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}=-\lambda_0||\boldsymbol x_j||_2||\boldsymbol x_*||_2$ and $t^*=\infty$ if $\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}=\lambda_0||\boldsymbol x_j||_2||\boldsymbol x_*||_2$ with
+
+\begin{equation}
+    T^\xi_j(\lambda_1,\lambda_0,t)=\frac{\xi \boldsymbol x_j^T \boldsymbol y}{\lambda_0}+\frac{c}{2}\xi\boldsymbol x_j^T\boldsymbol y-\frac{cn\lambda_0||\boldsymbol x_j||_2}{2||\boldsymbol x_*||_2}
 \end{equation}
 
 
