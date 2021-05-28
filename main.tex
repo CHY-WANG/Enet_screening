@@ -58,12 +58,12 @@ we can safely conclude $\boldsymbol\beta_{\lambda,j}=0$ and the corresponding $\
 
 \begin{gather}
         \label{eq:dualmi}
-        (\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})\equiv\underset{\boldsymbol\theta\in \mathbb{R}^{ n},\boldsymbol\gamma\in\mathbb{R}^p}{\mathrm{arg\,max}}g_{\lambda_1}(\boldsymbol\theta,\boldsymbol\gamma)\\
-        \begin{aligned}s.t.\quad (\boldsymbol\theta,\boldsymbol\gamma)\in \mathcal{F}_{\lambda_0}\nonumber.
+        (\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})\equiv\underset{\boldsymbol\theta\in \mathbb{R}^{ n},\boldsymbol\gamma\in\mathbb{R}^p}{\mathrm{arg\,max}}g_{\lambda_0}(\boldsymbol\theta,\boldsymbol\gamma)\\
+        \begin{aligned}s.t.\quad (\boldsymbol\theta,\boldsymbol\gamma)\in \mathcal{F}_{\lambda_1}\nonumber.
         \end{aligned}
 \end{gather}
 
-Compared to the origin dual problem \eqref{eq:dualtheta} at $\lambda_0$, the intermediate problem \eqref{eq:dualmi} optimizes a slightly different dual function on the same feasible set, while the origin dual problem at $\lambda_1$ optimize the same dual function but on a slightly different feasible set, compared to the intermediate problem. Then we can use the solution $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ to find a bound such that $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})\in \mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ and after that based on $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ find a second bound such that $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})\in \mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$. Last if we find a bound satisfying:
+Compared to the origin dual problem \eqref{eq:dualtheta} at $\lambda_0$, the intermediate problem \eqref{eq:dualmi} optimizes the same dual function on a slightly different feasible set, while compared to the intermediate problem, the origin dual problem at $\lambda_1$ optimize a slightly different dual function on the same feasible set. Then we can use the solution $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ to find a bound such that $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})\in \mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ and after that based on $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ find a second bound such that $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})\in \mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$. Last if we find a bound satisfying:
 
 \begin{equation}
     \label{eq:boundbound}
@@ -72,90 +72,40 @@ Compared to the origin dual problem \eqref{eq:dualtheta} at $\lambda_0$, the int
 
 then it automatically satisfies $T_j(\lambda_{1},\lambda_{0};\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\geq |\boldsymbol x_j^T\boldsymbol\theta_{\lambda_1}|$ and can be used for screening.
 
+In the case when $\lambda_0=\lambda_{\max}$, a form of the bound $T_j(\lambda_{1},\lambda_{0};\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ has been derived in BEDPP for elastic net \citep{Zeng2021}:
+
+\begin{theorem}
+    \label{thm:0.1}
+    For any $\lambda_1\in(0,\lambda_{\max})$, let $\boldsymbol x_*\equiv\underset{\boldsymbol x_j}{argmax}|\boldsymbol x_j^T\boldsymbol y|$ and $c\equiv \frac{\lambda_{\max}-\lambda_1}{\lambda_{\max}\lambda_1}$, then
+    \begin{gather}
+        \begin{aligned}
+            T_j(\lambda_{1},\lambda_{\max};\boldsymbol\theta_{\lambda_{\max}},\boldsymbol\gamma_{\lambda_{\max}})&=\left|\frac{\lambda_{\max}+\lambda_1}{2\lambda_{\max}\lambda_1}\boldsymbol x_j^T\boldsymbol y-\frac{n\alpha c\lambda_{\max}}{2(||\boldsymbol x_*||_2^2+n(1-\alpha)\lambda_1)}\textit{sign}(\boldsymbol x_j^T\boldsymbol y) \boldsymbol x_j^T\boldsymbol x_*\right|+\\
+            &\frac{c}{2}\sqrt{\left(||\boldsymbol x_j||_2^2+n(1-\alpha)\lambda_1\right)\left(||\boldsymbol y||_2^2-\frac{n^2\alpha^2\lambda_{\max}^2}{||\boldsymbol x_*||_2^2+n(1-\alpha)\lambda_1}\right)}.
+        \end{aligned}
+    \end{gather}
+\end{theorem}
+
+Thus, in this paper, we will derive a form of bound for the case when $\lambda_0<\lambda_{\max}$. These two cases together will cover the whole solution path.
+
 \subsection{Origin and Intermediate Dual Variables Bounds}
 
 In this section, we will derive the two bounds $\mathcal{A}^1$ and $\mathcal{A}^2$.
 
-\subsubsection{Method I}
-
-Looking at the form of the dual function \eqref{eq:dualtheta}, $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is the projection of $(\frac{\boldsymbol y}{\lambda_0},0)$ onto $\mathcal{F}_{\lambda_0}$, while in the intermediate problem \eqref{eq:dualmi}, $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is the projection of a different point $(\frac{\boldsymbol y}{\lambda},0)$ onto the same set $\mathcal{F}_{\lambda_0}$. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a bound for $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ can be derived:
-
 \begin{theorem}
     \label{thm:1.1}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is bounded in a ball with center and radius
-    \begin{gather}
-        \begin{aligned}
-            \boldsymbol c_1\equiv\binom{\boldsymbol c_1^\theta}{\boldsymbol c_2^\gamma}&=\binom{\frac{1}{2}c(1-\rho)\boldsymbol y+(1+\frac{1}{2}c\rho\lambda_0)\boldsymbol\theta_{\lambda_0}}{(1+\frac{1}{2}c\rho\lambda_0)\boldsymbol\gamma_{\lambda_0}},\\
-            r_1&=\frac{c}{2}\sqrt{||\boldsymbol y||_2^2-\rho \boldsymbol y^T(\boldsymbol y-\lambda_0\boldsymbol\theta_{\lambda_0})},
-        \end{aligned}
-    \end{gather}
-    where
-    \begin{gather}
-        \begin{aligned}
-            c&\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1},\\
-            \rho&\equiv\frac{\boldsymbol y^T(\boldsymbol y-\lambda_0\boldsymbol\theta_{\lambda_0})}{||\boldsymbol y-\lambda_0\boldsymbol\theta_{\lambda_0}||_2^2+\lambda_0^2||\boldsymbol\gamma_{\lambda_0}||_2^2}.\nonumber
-        \end{aligned}
-    \end{gather}
-\end{theorem}
-
-The theorem  directly implies that $\boldsymbol\theta_{\lambda_1|\lambda_0}$ is in the ball with center $\boldsymbol c_1^\theta$ and radius $r_1$.
-
-Note if we restate $r_1$ and $\rho$ in terms of the primal solution, it becomes:
-
-\begin{gather}
-    \label{eq:thm1prim}
-    \begin{aligned}
-        r_1&=\frac{c}{2}\sqrt{(||\boldsymbol y||_2^2-\rho \boldsymbol y^TX\boldsymbol\beta_{\lambda_0})},\\
-        \rho&\equiv\frac{\boldsymbol y^TX\boldsymbol\beta_{\lambda_0}}{||X\boldsymbol\beta_{\lambda_0}||_2^2+n(1-\alpha)\lambda_0||\boldsymbol\beta_{\lambda_0}||_2^2}.
-    \end{aligned}
-\end{gather}
-
-Next, we use Theorem \ref{thm:1.1} and the fact that $(\boldsymbol\gamma_{\lambda_1|\lambda_0},\boldsymbol\theta_{\lambda_1|\lambda_0})$ is the solution to problem \ref{eq:dualmi} to derive a tighter bound for $||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2$.
-
-\begin{theorem}
-    \label{thm:1.2}
-    To do.
-\end{theorem}
-
-Last, both $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ and $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ are the optimizer of constrained problems with the same objective function $g_{\lambda_1}$, but $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is the optimizer in the set $\mathcal{F}_{\lambda_0}$, while $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is the optimizer in the set $\mathcal{F}_{\lambda_1}$. Considering the second order expansion of $g_{\lambda_1}$ at $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$, we can derive a bound for $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$:
-
-\begin{theorem}
-    \label{thm:1.3}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is known, $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is bounded in the set $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ such that $\boldsymbol\theta_{\lambda_1}$ is bounded in a ball with center and radius
-    \begin{gather}
-        \begin{aligned}
-            c_2&=\boldsymbol\theta_{\lambda_1|\lambda_0}\\
-            r_2&=\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2.
-        \end{aligned}
-    \end{gather}
-\end{theorem}
-
-Bound for $\gamma_{\lambda_1}$ is not considered since it is not necessary for the rest of derivation.
-
-\subsubsection{Method II}
-
-The alternative method considers an alternative intermediate problem where the objective function remains the same as in the original problem at $\lambda_0$ but the feasible set changes to $\mathcal{F}_{\lambda_1}$.
-
-\begin{gather}
-        \label{eq:dualmialt}
-        (\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})\equiv\underset{\boldsymbol\theta\in \mathbb{R}^{ n},\boldsymbol\gamma\in\mathbb{R}^p}{\mathrm{arg\,max}}g_{\lambda_0}(\boldsymbol\theta,\boldsymbol\gamma)\\
-        \begin{aligned}s.t.\quad (\boldsymbol\theta,\boldsymbol\gamma)\in \mathcal{F}_{\lambda_1}\nonumber.
-        \end{aligned}
-\end{gather}
-
-\begin{theorem}
-    \label{thm:1.1.alt}
     For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is bounded in the set $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ that is a ball with center and radius
     \begin{gather}
         \begin{aligned}
             \boldsymbol c_1&=\binom{\boldsymbol\theta_{\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}}\\
-            r_1&=\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2.
+            r_1&=\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2,
         \end{aligned}
     \end{gather}
 \end{theorem}
 
+where $c\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1}$. Looking at the form of the dual function \eqref{eq:dualtheta}, $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is the projection of $(\frac{\boldsymbol y}{\lambda_1},0)$ onto $\mathcal{F}_{\lambda_1}$, while in the intermediate problem \eqref{eq:dualmi}, $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is the projection of a different point $(\frac{\boldsymbol y}{\lambda_0},0)$ onto the same set $\mathcal{F}_{\lambda_1}$. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a bound for $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ can be derived:
+
 \begin{theorem}
-    \label{thm:1.2.alt}
+    \label{thm:1.2}
     For any $t\geq0$ and $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is known, $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is bounded in the set $\mathcal{A}^2(\lambda_1,\lambda_0,t|\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ that is a ball with center and radius
     \begin{gather}
         \begin{aligned}
@@ -171,9 +121,10 @@ The alternative method considers an alternative intermediate problem where the o
     \end{gather}
 \end{theorem}
 
+Note the result is valid for any $t\geq 0$. Instead of choosing a $t$ at this step as in the EDPP method, we will decide the choice of $t$ in the end of next subsection.
+
 \subsection{Upper Bound in the Combined Bound}
 
-\subsubsection{Method I}
 
 To find the bound in \eqref{eq:boundbound}, we can first consider the problem:
 
@@ -188,56 +139,24 @@ and it can be broken into two sub-problems:
     \Tilde{T}^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta',\boldsymbol\gamma')\equiv\underset{(\boldsymbol\theta,\boldsymbol\gamma)\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\theta',\boldsymbol\gamma')}{\mathrm{max}}\xi \boldsymbol x_j^T\boldsymbol\theta,
 \end{equation}
 
-where $\xi\in\{-1,1\}$. For any $(\boldsymbol\theta',\boldsymbol\gamma')$, $(\boldsymbol\theta,\boldsymbol\gamma)\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\theta',\boldsymbol\gamma')$ means $\boldsymbol\theta$ is in a ball with center $\boldsymbol\theta'$ and radius $\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2$ and $\xi \boldsymbol x_j^T\boldsymbol\theta$ is linear in $\boldsymbol\theta$, so the maximum can be obtained easily:
-
-\begin{equation}
-    \label{eq:ttildexi}
-    \Tilde{T}^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta',\boldsymbol\gamma')=\xi \boldsymbol x_j^T\boldsymbol\theta'+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2.
-\end{equation}
-
-Next, we need to maximize $\Tilde{T}^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta',\boldsymbol\gamma')$ subject to $(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1$.
-
-\begin{theorem}
-    \label{thm:2.1}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known,
-    \begin{gather}
-        \begin{aligned}
-            T^\xi_j&\equiv\underset{(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})}{\mathrm{max}}\Tilde{T}^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta',\boldsymbol\gamma')\\
-            &=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol c_1^\gamma||_2+\sqrt{1+c(\lambda_0-\lambda_1)}r_1\right).
-        \end{aligned}
-    \end{gather}
-\end{theorem}
-
-\subsubsection{Method II}
-
-The sub-problem \eqref{eq:ttilde} is still maximizing a linear function in a ball and the maximum is easy to obtain:
+where $\xi\in\{-1,1\}$. The sub-problem \eqref{eq:ttilde} is maximizing a linear function in a ball with center $\boldsymbol c_2$ and radius $r_2$ and the maximum is easy to obtain:
 
 \begin{gather}
-    \label{eq:ttildexi.alt}
+    \label{eq:ttildexi}
     \begin{aligned}
-        \Tilde{T}^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta',\boldsymbol\gamma')=\xi\left( \frac{1}{2}(\frac{1-t}{\lambda_0}+c)\boldsymbol x_j^T\boldsymbol y+\frac{t+1}{2}\boldsymbol x_j^T\boldsymbol\theta'\right)+\frac{||\boldsymbol x_j||_2|1-t|}{2}\left\Vert\binom{\boldsymbol\theta'-\left(\frac{1}{\lambda_0}+\frac{c}{1-t}\right)\boldsymbol y}{\boldsymbol\gamma'}\right\Vert_2,\\
+        \Tilde{T}^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta',\boldsymbol\gamma')&=\xi\boldsymbol x_j^T\boldsymbol c_2^\theta+||\boldsymbol x_j||_2r_2\\
+        &=\xi\left( \frac{1}{2}(\frac{1-t}{\lambda_0}+c)\boldsymbol x_j^T\boldsymbol y+\frac{t+1}{2}\boldsymbol x_j^T\boldsymbol\theta'\right)+\frac{||\boldsymbol x_j||_2|1-t|}{2}\left\Vert\binom{\boldsymbol\theta'-\left(\frac{1}{\lambda_0}+\frac{c}{1-t}\right)\boldsymbol y}{\boldsymbol\gamma'}\right\Vert_2,\\
     \end{aligned}
 \end{gather}
 
-where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\boldsymbol v_2||_2$ for any vector $\boldsymbol v_1,\boldsymbol v_2$. There is an extra parameter $t$, and this bound will be valid for all $t\geq 0$.
+where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\boldsymbol v_2||_2$ for any vector $\boldsymbol v_1,\boldsymbol v_2$. There is an extra parameter $t$, and this bound will be valid for all $t\geq 0$. The maximum of $\Tilde{T}^\xi_j$ on $\mathcal{A}^1$ does not have a simple close form, so we consider an upper bound for it instead.
 
 \begin{theorem}
-    \label{thm:2.2}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known,
-    \begin{gather}
-        \begin{aligned}
-            T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})&\equiv\underset{(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})}{\mathrm{max}}\Tilde{T}^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta',\boldsymbol\gamma')\\
-            %&=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol c_1^\gamma||_2+\sqrt{1+c(\lambda_0-\lambda_1)}r_1\right).
-        \end{aligned}
-    \end{gather}
-\end{theorem}
-
-\begin{theorem}
-    \label{thm:2.3}
+    \label{thm:2.1}
     For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, if we define
     \begin{gather}
         \begin{aligned}
-            T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\equiv\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\left(\xi \boldsymbol x_j^T \boldsymbol \theta_{\lambda_0}+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)\\+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\theta_{\lambda_0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}}\right\Vert_2\\
+            T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\equiv\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\xi \boldsymbol x_j^T \boldsymbol \theta_{\lambda_0}+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\\+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\theta_{\lambda_0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}}\right\Vert_2\\
             %&=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol c_1^\gamma||_2+\sqrt{1+c(\lambda_0-\lambda_1)}r_1\right).
         \end{aligned}
     \end{gather}
@@ -257,47 +176,95 @@ If we define
 then $T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ becomes
 
 \begin{equation}
-    \label{eq:txi.alt}
-    \xi\boldsymbol x_j^T\theta_{\lambda_0}+\frac{1}{2} \tilde{\boldsymbol x}_j^T(\boldsymbol v_2-t \boldsymbol v_1)+\frac{t+1}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2+\frac{1}{2}||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_2-t\boldsymbol v_1||_2.
+    \label{eq:txi}
+    \xi\boldsymbol x_j^T\theta_{\lambda_0}+\frac{1}{2} \tilde{\boldsymbol x}_j^T(\boldsymbol v_2-t \boldsymbol v_1)+\frac{t+1+|1-t|}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2+\frac{1}{2}||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_2-t\boldsymbol v_1||_2.
 \end{equation}
 
-\begin{theorem}
-    \label{thm:2.4}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, if $\boldsymbol y\neq \boldsymbol 0$,
-    \begin{gather}
-        \begin{aligned}
-            T^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\equiv\underset{t\geq 0}{\mathrm{min}}\,T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})=T^\xi_j(\lambda_1,\lambda_0,t*;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\\
-            where\quad t^*=\begin{cases}
-            0,\hfill \left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)^2\geq ||\tilde{\boldsymbol x}_j||^2_2||\boldsymbol v_1||^2_2\\
-            \left(\frac{\boldsymbol v_1^T\boldsymbol v_2}{||\boldsymbol v_1||_2^2}+\frac{\sqrt{||\boldsymbol v_1||_2^2||\boldsymbol v_2||_2^2-(\boldsymbol v_1^T\boldsymbol v_2)^2}\left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)}{||\boldsymbol v_1||_2^2\sqrt{||\boldsymbol x_j||_2^2||\boldsymbol v_1||_2^2-\left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)^2}}\right)\vee 0,\hfill\quad o.w.
-            \end{cases}
-        \end{aligned}
-    \end{gather}
-\end{theorem}
+Last, we need to choose a $t\geq 0$. An optimal choice will be the $t$ that minimizes $T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$. This choice results in a complicated form of $t$ and different values of $t$ have to be chosen for different $\boldsymbol x_j$, which may result in additional computation cost that outweighs the gain from screening. Instead, we choose the $t$ that minimizes a simpler objective
 
-If we define $\boldsymbol r_{\lambda_0}\equiv \boldsymbol y-X\boldsymbol\beta_{\lambda_0}$ and $\hat{\boldsymbol y}_{\lambda_0}\equiv X\boldsymbol\beta_{\lambda_0}$, then the results above can be expressed in primal variables:
+\begin{equation}
+    \frac{t}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2+\frac{1}{2}||\tilde{\boldsymbol x}_j||_2||\boldsymbol v_2-t\boldsymbol v_1||_2.
+\end{equation}
+
+The solution will be:
+
+\begin{equation}
+    t^*=\begin{cases}
+            0,\hfill c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{\lambda_0}||_2^2\geq ||\boldsymbol v_1||^2_2\\
+            \left(\frac{\boldsymbol v_1^T\boldsymbol v_2}{||\boldsymbol v_1||_2^2}-\frac{\sqrt{||\boldsymbol v_1||_2^2||\boldsymbol v_2||_2^2-(\boldsymbol v_1^T\boldsymbol v_2)^2}\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2}{||\boldsymbol v_1||_2^2\sqrt{||\boldsymbol v_1||_2^2-c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{\lambda_0}||_2^2}}\right)\vee 0,\hfill\quad o.w,
+            \end{cases}
+\end{equation}
+
+This latter choice won't depend on $j$ and will be close to the optimal choice. If we define $\boldsymbol r_{\lambda_0}\equiv \boldsymbol y-X\boldsymbol\beta_{\lambda_0}$ and $\hat{\boldsymbol y}_{\lambda_0}\equiv X\boldsymbol\beta_{\lambda_0}$, then the results above can be expressed in primal variables:
 
 \begin{gather}
     \begin{aligned}
-        T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})= \frac{\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}}{\lambda_0}+ \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t-1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}+\frac{t+1}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{\lambda_0}||_2\\
-        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2-2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta||_2^2}
+        T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})=  \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{\lambda_0}+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{\lambda_0}||_2\\
+        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{\lambda_0}||_2^2}
     \end{aligned}
 \end{gather}
 
-$t^*=0$ if
+$T_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ being the maximum of it over $\xi=-1,1$ is
+
+\begin{gather}
+    \begin{aligned}
+        T_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})= \left| \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0} \boldsymbol x_j^T \boldsymbol r_{\lambda_0}\right|+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{\lambda_0}||_2\\
+        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{\lambda_0}||_2^2}
+    \end{aligned}
+\end{gather}
+
+and $t^*=0$ if
 
 \begin{equation}
-    \frac{1}{\lambda_0^2}\left(||\boldsymbol x_j||_2^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2-(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2\right)+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol x_j||_2^2||\boldsymbol\beta_{\lambda_0}||_2^2+2\sqrt{c^2\lambda_1n(1-\alpha)}\boldsymbol \xi x_j^T\hat{\boldsymbol y}_{\lambda_0}||\boldsymbol x_j||_2||\boldsymbol\beta_{\lambda_0}||_2\leq 0,
+    \frac{1}{\lambda_0^2}||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2\leq 0,
 \end{equation}
 
 else $t^*=$
 
-\begin{equation}
-    \,
-\end{equation}
+\begin{gather}
+    \begin{aligned}
+        \left(1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}}{||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2}\right\\
+        \left-c^2\lambda_0^2\sqrt{\frac{||\boldsymbol y||_2^2\left(||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2\right)-\boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}}{||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\frac{\lambda_0(2\lambda_1-\lambda_0)}{\lambda_1}n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2}}
+        \frac{||\boldsymbol\beta_{\lambda_0}||_2\sqrt{\lambda_1n(1-\alpha)}}{||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2}\right)\vee0
+    \end{aligned}
+\end{gather}
+
+
+
+
+
 
 \subsection{Sequential Safe Screening Rule}
 
+\section{Experiments}
+
+\subsection{Simulation Study}
+
+We compared our proposed adaptive screening method (Adaptive) to sequential strong rule for elastic net (SSR) in simulated data sets. Active cycling is incorporated into both methods.
+
+The data is simulated from the model: $y=X\beta+0.1\epsilon$. The elements of $X$ and $\epsilon$ are sampled i.i.d from $N(0,1)$. The coefficient vector $\beta$ contains $s$ randomly selected elements equally spaced between $[-\beta_{\max},\beta_{\max}]$, with the remaining $p-s$ elements equal to zero. Each setting is replicated $10$ times to calculate the average time needed to solve the coefficient path. By default we set $p=10,000$, $n=1,000$, $s=20$, $\beta_{\max}=1$, $\alpha=0.9$, $L=100$, $\lambda_{\min}/\lambda_{\max}=0.05$. We consider the following cases where one of the variables above is varying at a time:
+
+\begin{enumerate}
+    \item \textbf{Varying proportion of lasso penalty:} $\alpha$ from $0.2$ to $0.999$.
+    \item \textbf{Varying signal strength:} $\beta_{\max}$ from $0.05$ to $1$.
+    \item \textbf{Varying sample size:} $n$ from $200$ to $10,000$.
+    \item \textbf{Varying number of features:} $p$ from $1,000$ to $100,000$.
+    \item \textbf{Varying sparsity:} $s$ from $10$ to $300$ while controlling total signal size $\beta_{\max}\times s=20$.
+    \item \textbf{Varying number of grid points:}  $L$ from $20$ to $1000$.
+    \item \textbf{Varying range of grid:}  $\lambda_{\min}/\lambda_{\max}$ from $0.5$ to $0.002$.
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{enet1.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: Varying proportion of lasso penalty: $\alpha$. Second column: varying sample size $n$. Third column: varying number of features $p$. Fourth column: varying signal strength $\beta_{\max}$}
+    \label{fig:sim1}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{enet2.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: varying sparsity $s$. Second column: Varying number of grid points $L$. Third column: Varying range of grid $\lambda_{\min}/\lambda_{\max}$.}
+    \label{fig:sim1}
+\end{figure}
 
 \appendix
 \appendixpage
@@ -349,132 +316,143 @@ where the minimum is obtained iff $\boldsymbol r=\boldsymbol u$ and $\boldsymbol
 
 \section{Proof of Theorem \ref{thm:1.1}}
 
-\section{Proof of Theorem \ref{thm:1.2} (To be finished)}
 
-The Lagrangian of the negative of the intermediate problem \eqref{eq:dualmi} is
+Considering the second order expansion of $g_{\lambda_0}$ at $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$, $g_{\lambda_0}\left(\boldsymbol\theta_{\lambda_1|\lambda_0},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right)$ can be written as
+
+\begin{equation}
+    \label{eq:1.1.1}
+    g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}}=g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}}+\left\langle\nabla g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}},\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}}-\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}}\right\rangle-\frac{\lambda_0^2}{2}\left\Vert\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}}-\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}}\right\Vert_2^2,
+\end{equation}
+
+because $\nabla^2g_{\lambda_0}$ is $-\lambda_0^2$ times the identity matrix. 
+
+First, both $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ and $\left(\boldsymbol\theta_{\lambda_1|\lambda_0},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right)$ are in the convex set $\mathcal{F}_{\lambda_0}$, because
+
+\begin{equation}
+    \left\Vert X^T\boldsymbol\theta_{\lambda_1|\lambda_0}-\sqrt{n(1-\alpha)\lambda_0}\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_\infty= \left\Vert X^T\boldsymbol\theta_{\lambda_1|\lambda_0}-\sqrt{n(1-\alpha)\lambda_1}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_\infty\leq n\alpha.
+\end{equation}
+
+$(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is the maximizer in the convex set $\mathcal{F}_{\lambda_0}$. That implies that
+
+\begin{equation}
+    \label{eq:1.1.2}
+    \left\langle\nabla g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}},\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}}-\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}}\right\rangle\leq 0.
+\end{equation}
+
+Second, by the same argument, both $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ and $\left(\boldsymbol\theta_{\lambda_0},\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{\lambda_0}\right)$ are in the convex set $\mathcal{F}_{\lambda_1}$. Then,
 
 \begin{gather}
+    \label{eq:1.1.3}
     \begin{aligned}
-        L(\boldsymbol\theta,\boldsymbol\gamma)\equiv&-\frac{1}{2}||\boldsymbol y||_2^2+\frac{\lambda_1^2}{2}\left\Vert\boldsymbol\theta-\frac{\boldsymbol y}{\lambda_1}\right\Vert_2^2+\frac{\lambda_1^2}{2}||\boldsymbol\gamma||_2^2\\
-        &+\boldsymbol\eta^{+T}(X^T\boldsymbol\theta-\sqrt{n(1-\alpha)\lambda_0}\boldsymbol\gamma-n\alpha\mathbf{1}_p)+\boldsymbol\eta^{-T}(-X^T\boldsymbol\theta+\sqrt{n(1-\alpha)\lambda_0}\boldsymbol\gamma-n\alpha\mathbf{1}_p)
+        g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}}&=\frac{1}{2}||\boldsymbol y||_2^2-\frac{\lambda_0^2}{2}\left\Vert\frac{\boldsymbol y}{\lambda_0}-\boldsymbol\theta_{\lambda_1|\lambda_0}\right\Vert_2^2-\frac{\lambda_1\lambda_0}{2}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2\\
+        &= \frac{1}{2}||\boldsymbol y||_2^2-\frac{\lambda_0^2}{2}\left\Vert\frac{\boldsymbol y}{\lambda_0}-\boldsymbol\theta_{\lambda_1|\lambda_0}\right\Vert_2^2-\frac{\lambda_0^2}{2}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2+\left(\frac{\lambda_0^2}{2}-\frac{\lambda_1\lambda_0}{2}\right)||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2\\
+        &=g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2\\
+        &\geq g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{\lambda_0}}+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2\\
+        &=g_{\lambda_0}\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}}-\frac{\lambda_0^2(\lambda_0-\lambda_1)}{2\lambda_1}||\boldsymbol\gamma_{\lambda_0}||_2^2+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2,
     \end{aligned}
 \end{gather}
 
-where $\boldsymbol\eta_+,\boldsymbol\eta_-\in \mathcal{R}^p_+$ are vectors of non-negative Lagrangian multipliers.
+where the inequality is due to the fact that $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is the maximizer in $\mathcal{F}_{\lambda_1}$. Combining \eqref{eq:1.1.1}, \eqref{eq:1.1.2} and \eqref{eq:1.1.3} we have:
 
-For any $j$, the KKT conditions take the derivative with respect to $\boldsymbol\gamma_j$ and set to 0:
+\begin{gather}
+    \begin{aligned}
+        &\left\Vert\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}}-\binom{\boldsymbol\theta_{\lambda_0}}{\boldsymbol\gamma_{\lambda_0}}\right\Vert_2^2\leq c\lambda_0||\boldsymbol\gamma_{\lambda_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2,
+    \end{aligned}
+\end{gather}
 
-\begin{equation}
+and rearranging the terms yields the result in Theorem \ref{thm:1.1}:
+
+\begin{gather}
+    \begin{aligned}
+        ||\boldsymbol\theta_{\lambda_1|\lambda_0}-\boldsymbol\theta_{\lambda_0}||_2^2&\leq c\lambda_0||\boldsymbol\gamma_{\lambda_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2-\left\Vert\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}-\boldsymbol\gamma_{\lambda_0}\right\Vert_2^2\\
+        &=c\lambda_0||\boldsymbol\gamma_{\lambda_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2-\frac{\lambda_1}{\lambda_0}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2+2\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}^T\boldsymbol\gamma_{\lambda_1|\lambda_0}-||\boldsymbol\gamma_{\lambda_0}||_2^2\\
+        &=-||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2+2\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}^T\gamma_{\lambda_1|\lambda_0}+(c\lambda_0-1)||\boldsymbol\gamma_{\lambda_0}||_2^2\\
+        &=-\left\Vert\boldsymbol\gamma_{\lambda_1|\lambda_0}-\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}\right\Vert_2^2+c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{\lambda_0}||_2^2\\
+        \implies \left\Vert\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}-\binom{\boldsymbol\theta_{\lambda_0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}}\right\Vert_2^2&\leq c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{\lambda_0}||_2^2.
+    \end{aligned}
+\end{gather}
+
+\section{Proof of Theorem \ref{thm:1.2}}
+
+From a geometric aspect, the dual problem \eqref{eq:dualtheta} is minimizing an $L_2$ distance, or in other word , finding a projection. $(\boldsymbol \theta_{\lambda_1|\lambda_0},\boldsymbol \gamma_{\lambda_1|\lambda_0})$ is the projection of $(\frac{\boldsymbol y}{\lambda_0},\boldsymbol0)$ onto $\mathcal{F}_{\lambda_1}$ while $(\boldsymbol \theta_{\lambda_1},\boldsymbol \gamma_{\lambda_1})$ is the projection of $(\frac{\boldsymbol y}{\lambda_1},\boldsymbol0)$ onto the same set $\mathcal{F}_{\lambda_1}$. $\mathcal{F}_{\lambda_1}$ is a nonempty closed convex set. We define
+
+\begin{gather}
     \label{eq:1.2.1}
-    \frac{\partial L}{\partial \boldsymbol\gamma_j}=\lambda_1^2\boldsymbol\gamma_j-\sqrt{n(1-\alpha)\lambda_0}(\boldsymbol\eta_j^+-\boldsymbol\eta_j^-)=0.
-\end{equation}
-
-By complementary slackness, $\boldsymbol\eta_j^+>0\implies \boldsymbol x_j^T\boldsymbol\theta-\sqrt{n(1-\alpha)\lambda_0}\boldsymbol\gamma_j=n\alpha$ and $\boldsymbol\eta_j^->0\implies \boldsymbol x_j^T\boldsymbol\theta-\sqrt{n(1-\alpha)\lambda_0}\boldsymbol\gamma_j=-n\alpha$, so $\boldsymbol\eta_j^+>0$ and $\boldsymbol\eta_j^->0$ in \eqref{eq:1.2.1} cannot be non-zero at the same time, which implies:
-
-\begin{gather}
     \begin{aligned}
-        \boldsymbol\gamma_j>0\iff\boldsymbol\eta_j^+>0\implies \boldsymbol\gamma_j=\frac{\boldsymbol x_j^T\boldsymbol\theta-n\alpha}{\sqrt{n(1-\alpha)\lambda_0}},\\
-        \boldsymbol\gamma_j<0\iff\boldsymbol\eta_j^->0\implies \boldsymbol\gamma_j=\frac{\boldsymbol x_j^T\boldsymbol\theta+n\alpha}{\sqrt{n(1-\alpha)\lambda_0}}.
+        \boldsymbol v_1\equiv\binom{\frac{\boldsymbol y}{\lambda_0}-\boldsymbol \theta_{\lambda_1|\lambda_0}}{-\boldsymbol \gamma_{\lambda_1|\lambda_0}},\\
+        \boldsymbol v_2\equiv \binom{\frac{\boldsymbol y}{\lambda_1}-\boldsymbol \theta_{\lambda_1|\lambda_0}}{-\boldsymbol \gamma_{\lambda_1|\lambda_0}}.
     \end{aligned}
 \end{gather}
 
-This implies
+First, we have the idea of projections of rays, stated as the following
+
+\begin{lemma}
+    \citep{Bauschke2011}
+    Let $\mathcal{C}$ be a nonempty closed convex subset of a Hilbert space $\mathcal{H}$. For any $\boldsymbol w\in\mathcal{H}$ , let $P_{\mathcal{C}}(\boldsymbol w)$ be the projection of $\boldsymbol w$ onto $\mathcal{C}$. Then for any $\boldsymbol w\in\mathcal{H}$ and $t\geq 0$,
+    \begin{equation}
+        P_{\mathcal{C}}\left(P_{\mathcal{C}}(w)+t\left(\boldsymbol w-P_{\mathcal{C}}(\boldsymbol w)\right)\right)=P_{\mathcal{C}}(\boldsymbol w).
+    \end{equation}
+\end{lemma}
+
+If we choose $\boldsymbol w=(\frac{\boldsymbol y}{\lambda_0},\boldsymbol0)$, it says for all $t\geq 0$, $(\boldsymbol \theta_{\lambda_1|\lambda_0},\boldsymbol \gamma_{\lambda_1|\lambda_0})$ is also the projection of $(\boldsymbol \theta_{\lambda_1|\lambda_0},\boldsymbol \gamma_{\lambda_1|\lambda_0})+t\boldsymbol v_1$ onto $\mathcal{F}_{\lambda_1}$. Next we also have the firmly nonexpansiveness property of projections:
+
+\begin{lemma}
+    \citep{Bauschke2011}
+    Let $\mathcal{C}$ be a nonempty closed convex subset of a Hilbert space $\mathcal{H}$. For any $\boldsymbol w_1,\boldsymbol w_2\in\mathcal{H}$,
+    \begin{equation}
+        ||P_{\mathcal{C}}(\boldsymbol w_1)-P_{\mathcal{C}}(\boldsymbol w_2)||_2^2\leq \langle\boldsymbol w_1-\boldsymbol w_2, P_{\mathcal{C}}(\boldsymbol w_1)-P_{\mathcal{C}}(\boldsymbol w_2)\rangle.
+    \end{equation}
+\end{lemma}
+
+If we rearrange the terms into squares, it says:
 
 \begin{equation}
-    \label{eq:1.2.2}
-    |\boldsymbol\gamma_j|\leq \max\{\boldsymbol x_j^T\boldsymbol\theta-n\alpha,-\boldsymbol x_j^T\boldsymbol\theta-n\alpha,0\}.
+    ||P_{\mathcal{C}}(\boldsymbol w_1)-P_{\mathcal{C}}(\boldsymbol w_2)-\frac{1}{2}(\boldsymbol w_1-\boldsymbol w_2)||_2^2\leq\frac{1}{4}||\boldsymbol w_1-\boldsymbol w_2||.
 \end{equation}
 
-The Slater's condition for the negative of the intermediate problem holds, so the solution $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ will satisfy the result \eqref{eq:1.2.2} derived from the KKT conditions. Next we consider bounding the term $\boldsymbol x_j^T\boldsymbol\theta_{\lambda_1|\lambda_0}$.
-
-\section{Proof of Theorem \ref{thm:1.3}}
-
-Considering the second order expansion of $g_{\lambda_1}$ at $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$, $g_{\lambda_1}\left(\boldsymbol\theta_{\lambda_1},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}\right)$ can be written as
+If we choose $\boldsymbol w_1=(\frac{y}{\lambda_1},\boldsymbol0),\boldsymbol w_2=(\boldsymbol \theta_{\lambda_1|\lambda_0},\boldsymbol \gamma_{\lambda_1|\lambda_0})+t\boldsymbol v_1$, which means $P_{\mathcal{C}}(\boldsymbol w_1)=(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1}),P_{\mathcal{C}}(\boldsymbol w_2)=(\boldsymbol\theta_{\lambda_1
+|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0}),\boldsymbol w_1-\boldsymbol w_2=\boldsymbol v_2-t\boldsymbol v_1$, we have:
 
 \begin{equation}
-    \label{eq:1.3.1}
-    g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}}=g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}+\left\langle\nabla g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}},\binom{\boldsymbol\theta_{\lambda_1}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}}-\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}\right\rangle-\frac{\lambda_1^2}{2}\left\Vert\binom{\boldsymbol\theta_{\lambda_1}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}}-\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}\right\Vert_2^2,
+    \left\Vert\binom{\boldsymbol\theta_{\lambda_1}}{\boldsymbol\gamma_{\lambda_1}}-\binom{\boldsymbol\theta_{\lambda_1
+|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}-\frac{1}{2}(\boldsymbol v_2-t\boldsymbol v_1)\right\Vert_2^2\leq\frac{1}{4}||\boldsymbol v_2-t\boldsymbol v_1||_2^2,
 \end{equation}
 
-because $\nabla^2g(\lambda_1)$ is $-\lambda_1^2$ times the identity matrix. 
-
-First, both $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ and $\left(\boldsymbol\theta_{\lambda_1},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}\right)$ are in the convex set $\mathcal{F}_{\lambda_0}$, because
-
-\begin{equation}
-    \left\Vert X^T\boldsymbol\theta_{\lambda_1}-\sqrt{n(1-\alpha)\lambda_0}\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}\right\Vert_\infty= \left\Vert X^T\boldsymbol\theta_{\lambda_1}-\sqrt{n(1-\alpha)\lambda_1}\boldsymbol\gamma_{\lambda_1}\right\Vert_\infty\leq n\alpha.
-\end{equation}
-
-$(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is the maximizer in the convex set. That implies that
-
-\begin{equation}
-    \label{eq:1.3.2}
-    \left\langle\nabla g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}},\binom{\boldsymbol\theta_{\lambda_1}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}}-\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}\right\rangle\leq 0.
-\end{equation}
-
-Second, by the same argument, both $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ and $\left(\boldsymbol\theta_{\lambda_1|\lambda_0},\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right)$ are in the convex set $\mathcal{F}_{\lambda_1}$. Then,
-
-\begin{gather}
-    \label{eq:1.3.3}
-    \begin{aligned}
-        g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}}&=\frac{1}{2}||\boldsymbol y||_2^2-\frac{\lambda_1^2}{2}\left\Vert\frac{\boldsymbol y}{\lambda_1}-\boldsymbol\theta_{\lambda_1}\right\Vert_2^2-\frac{\lambda_1^3}{2\lambda_0}||\boldsymbol\gamma_{\lambda_1}||_2^2\\
-        &\geq \frac{1}{2}||\boldsymbol y||_2^2-\frac{\lambda_1^2}{2}\left\Vert\frac{\boldsymbol y}{\lambda_1}-\boldsymbol\theta_{\lambda_1}\right\Vert_2^2-\frac{\lambda_1^2}{2}||\boldsymbol\gamma_{\lambda_1}||_2^2+\left(\frac{\lambda_1^2}{2}-\frac{\lambda_1^3}{2\lambda_0}\right)||\boldsymbol\gamma_{\lambda_1}||_2^2\\
-        &=g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1}}{\boldsymbol\gamma_{\lambda_1}}+\frac{c\lambda_1^3}{2}||\boldsymbol\gamma_{\lambda_1}||_2^2\\
-        &\geq g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{\lambda_1|\lambda_0}}+\frac{c\lambda_1^3}{2}||\boldsymbol\gamma_{\lambda_1}||_2^2\\
-        &=g_{\lambda_1}\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}-\frac{c\lambda_0\lambda_1^2}{2}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2+\frac{c\lambda_1^3}{2}||\boldsymbol\gamma_{\lambda_1}||_2^2,
-    \end{aligned}
-\end{gather}
-
-where the inequality is due to the fact that $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is the maximizer in $\mathcal{F}_{\lambda_1}$. Combining \eqref{eq:1.3.1}, \eqref{eq:1.3.2} and \eqref{eq:1.3.3} we have:
-
-\begin{gather}
-    \begin{aligned}
-        &\left\Vert\binom{\boldsymbol\theta_{\lambda_1}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}}-\binom{\boldsymbol\theta_{\lambda_1|\lambda_0}}{\boldsymbol\gamma_{\lambda_1|\lambda_0}}\right\Vert_2^2\leq c\lambda_0||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{\lambda_1}||_2^2,
-    \end{aligned}
-\end{gather}
-
-and rearranging the terms yields the result in Theorem \ref{thm:1.3}:
-
-\begin{gather}
-    \begin{aligned}
-        ||\boldsymbol\theta_{\lambda_1}-\boldsymbol\theta_{\lambda_1|\lambda_0}||_2^2&\leq c\lambda_0||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{\lambda_1}||_2^2-\left\Vert\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}-\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_2^2\\
-        &=c\lambda_0||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{\lambda_1}||_2^2-\frac{\lambda_1}{\lambda_0}||\boldsymbol\gamma_{\lambda_1}||_2^2+2\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}^T\boldsymbol\gamma_{\lambda_1|\lambda_0}-||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2\\
-        &=-||\boldsymbol\gamma_{\lambda_1}||_2^2+2\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1}^T\gamma_{\lambda_1|\lambda_0}+(c\lambda_0-1)||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2\\
-        &=-\left\Vert\boldsymbol\gamma_{\lambda_1}-\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_2^2+c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2\\
-        &\leq c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2^2.
-    \end{aligned}
-\end{gather}
+which means $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is bounded in a ball. Plugging in the definition in \eqref{eq:1.2.1} will result in the form stated in the theorem.
 
 \section{Proof of Theorem \ref{thm:2.1}}
 
-$T_j^\xi$ is the maximum of the problem
+The maximum of $\Tilde{T}^\xi_j$ can be bounded by the sum of two maximums:
 
 \begin{gather}
     \begin{aligned}
-        &\underset{\theta',\gamma'}{\mathrm{max}}\,\xi \boldsymbol x_j^T\boldsymbol\theta'+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2\\
-        &s.t.\quad \left\Vert\binom{\boldsymbol\theta'}{\boldsymbol\gamma'}-\binom{\boldsymbol c_1^\theta}{\boldsymbol c_1^\gamma}\right\Vert^2_2\leq r_1^2.
+        \underset{(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1}{\mathrm{max}}\Tilde{T}^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta',\boldsymbol\gamma')\\
+        =\underset{(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1}{\mathrm{max}}\xi\left( \frac{1}{2}(\frac{1-t}{\lambda_0}+c)\boldsymbol x_j^T\boldsymbol y+\frac{t+1}{2}\boldsymbol x_j^T\boldsymbol\theta'\right)+\frac{||\boldsymbol x_j||_2|1-t|}{2}\left\Vert\binom{\boldsymbol\theta'-\left(\frac{1}{\lambda_0}+\frac{c}{1-t}\right)\boldsymbol y}{\boldsymbol\gamma'}\right\Vert_2\\
+        \leq \underset{(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1}{\mathrm{max}}\xi\left( \frac{1}{2}(\frac{1-t}{\lambda_0}+c)\boldsymbol x_j^T\boldsymbol y+\frac{t+1}{2}\boldsymbol x_j^T\boldsymbol\theta'\right)+\underset{(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1}{\mathrm{max}}\frac{||\boldsymbol x_j||_2|1-t|}{2}\left\Vert\binom{\boldsymbol\theta'-\left(\frac{1}{\lambda_0}+\frac{c}{1-t}\right)\boldsymbol y}{\boldsymbol\gamma'}\right\Vert_2.
     \end{aligned}
 \end{gather}
 
-Let $r^\theta=||\boldsymbol\theta'-\boldsymbol c_1^\theta||_2$ and $r^\gamma=||\boldsymbol\gamma'-\boldsymbol c_1^\gamma||_2$. The problem becomes
+The first maximization problem is maximizing a linear function in a ball with center $\boldsymbol c_1$ and radius $r_1$, so the maximum can be easily obtained as:
 
 \begin{gather}
     \begin{aligned}
-        &\underset{\boldsymbol\theta',\boldsymbol\gamma',r^\theta,r^\gamma}{\mathrm{max}}\,\xi \boldsymbol x_j^T\boldsymbol\theta'+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2\\
-        &s.t.\quad r^\theta=||\boldsymbol\theta'-\boldsymbol c_1^\theta||_2,\,r^\gamma=||\boldsymbol\gamma'-\boldsymbol c_1^\gamma||_2,\,r^{\theta2}+r^{\gamma2}=r_1^2.
+        \frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\left(\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2r_1\right)\\
+        =\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\left(\xi \boldsymbol x_j^T \boldsymbol \theta_{\lambda_0}+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right).
     \end{aligned}
 \end{gather}
 
-Maximizing with respect to $\boldsymbol\theta'$ and $\boldsymbol\gamma'$ can be easily done since they can be maximized independently and their constraints are both ball constraints. The problems becomes
+The second maximization problem is maximizing the distance to $\left((\frac{1}{\lambda_0}+\frac{c}{1-t})\boldsymbol y,\boldsymbol 0\right)$ in a ball with center $\boldsymbol c_1$ and radius $r_1$, so the maximum can also be easily obtained as:
 
 \begin{gather}
     \begin{aligned}
-        &\underset{r^\theta,r^\gamma}{\mathrm{max}}\,\xi \boldsymbol x_j^T\boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(r^\theta+\sqrt{c(\lambda_0-\lambda_1)}(||\boldsymbol c_1^\gamma||_2+r^\gamma)\right)\\
-        &s.t.\quad r^{\theta2}+r^{\gamma2}=r_1^2.
+        \frac{||\boldsymbol x_j||_2|1-t|}{2}\left(\left\Vert\boldsymbol c_1-\binom{(\frac{1}{\lambda_0}+\frac{c}{1-t})\boldsymbol y}{\boldsymbol 0}\right\Vert_2+r_1\right)\\
+        =\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\theta_{\lambda_0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_0}}\right\Vert_2+\frac{||\boldsymbol x_j||_2|1-t|}{2}\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2.
     \end{aligned}
 \end{gather}
 
-Again, it is a maximization in a ball constraint of $(r^\theta,r^\gamma)$ and the maximum will be the form in \ref{thm:1.3}. 
+$T^\xi_j$ is the sum of these two maximums so it is an upper bound for $\Tilde{T}^\xi_j$.
 
+\iffalse
 \section{Proof of Theorem \ref{thm:2.2}}
 
 Defining the following quantities:
@@ -530,14 +508,46 @@ Take derivative with respect to $\boldsymbol z$:
     \end{gather}
 \end{enumerate}
 
-\section{Proof of Theorem \ref{thm:2.4}}
+\section{Alternative choice of t}
+
+\begin{theorem}
+    \label{thm:2.2}
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, if $\boldsymbol y\neq \boldsymbol 0$,
+    \begin{gather}
+        \begin{aligned}
+            T^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\equiv\underset{t\geq 0}{\mathrm{min}}\,T^\xi_j(\lambda_1,\lambda_0,t;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})=T^\xi_j(\lambda_1,\lambda_0,t^*;\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\\
+            where\quad t^*=\begin{cases}
+            0,\hfill \left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)^2\geq ||\tilde{\boldsymbol x}_j||^2_2||\boldsymbol v_1||^2_2\\
+            \left(\frac{\boldsymbol v_1^T\boldsymbol v_2}{||\boldsymbol v_1||_2^2}+\frac{\sqrt{||\boldsymbol v_1||_2^2||\boldsymbol v_2||_2^2-(\boldsymbol v_1^T\boldsymbol v_2)^2}\left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)}{||\boldsymbol v_1||_2^2\sqrt{||\boldsymbol x_j||_2^2||\boldsymbol v_1||_2^2-\left(\tilde{\boldsymbol x}_j^T\boldsymbol v_1-||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_0}||_2\right)^2}}\right)\vee 0,\hfill\quad o.w.
+            \end{cases}
+        \end{aligned}
+    \end{gather}
+\end{theorem}
+
+In terms of primal variables, $t^*=0$ if
+
+\begin{equation}
+    \frac{1}{\lambda_0^2}\left(||\boldsymbol x_j||_2^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2-(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2\right)+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol x_j||_2^2||\boldsymbol\beta_{\lambda_0}||_2^2+2\sqrt{c^2\lambda_1n(1-\alpha)}\boldsymbol \xi x_j^T\hat{\boldsymbol y}_{\lambda_0}||\boldsymbol x_j||_2||\boldsymbol\beta_{\lambda_0}||_2\leq 0,
+\end{equation}
+
+else $t^*=$
+
+\begin{gather}
+    \begin{aligned}
+        1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}}{||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2}\\
+        +c\lambda_0\sqrt{\frac{||\boldsymbol y||_2^2\left(||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2\right)-\boldsymbol y^T\hat{\boldsymbol y}_{\lambda_0}}{||\boldsymbol x_j||_2^2||\hat{\boldsymbol y}_{\lambda_0}||_2^2-(\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0})^2+\frac{\lambda_0(2\lambda_1-\lambda_0)}{\lambda_1}n(1-\alpha)||\boldsymbol x_j||_2^2||\boldsymbol\beta_{\lambda_0}||_2^2+2\lambda_0^2\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}||\boldsymbol x_j||_2||\boldsymbol\beta_{\lambda_0}||_2}}\\
+        \times \frac{\xi \boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}-||\boldsymbol x_j||_2||\boldsymbol\beta_{\lambda_0}||_2\sqrt{c\lambda_0(\lambda_0-\lambda_1)n(1-\alpha)}}{||\hat{\boldsymbol y}_{\lambda_0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{\lambda_0}||_2^2}
+    \end{aligned}
+\end{gather}
+
+\section{Proof of Theorem \ref{thm:2.2}}
 
 \begin{lemma}
     \label{lem:2.4.1}
     $\boldsymbol v_1^T \boldsymbol v_2\geq 0$.
 \end{lemma}
 
-It is also clear that $\boldsymbol v_1$ and $\boldsymbol v_2$ are not colinear as long as $\boldsymbol y\neq \boldsymbol0$. Take derivative of \eqref{eq:txi.alt} with respect to $t$ and set to 0.
+It is also clear that $\boldsymbol v_1$ and $\boldsymbol v_2$ are not colinear as long as $\boldsymbol y\neq \boldsymbol0$. Take derivative of \eqref{eq:txi} with respect to $t$ and set to 0.
 
 \begin{gather}
     \label{eq:2.4.1}
@@ -613,6 +623,7 @@ Last,
         &\geq c\left(\frac{||\boldsymbol y||_2^2}{\lambda_0}-||\boldsymbol y||_2||\boldsymbol\theta_{\lambda_0}||_2\right)\geq 0
     \end{aligned}
 \end{gather}
+\fi
 
 \section{Enhanced EDPP}
 
@@ -721,5 +732,78 @@ Else, $t^*=0$ if $\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}=-\lambda_0
     T^\xi_j(\lambda_1,\lambda_0,t)=\frac{\xi \boldsymbol x_j^T \boldsymbol y}{\lambda_0}+\frac{c}{2}\xi\boldsymbol x_j^T\boldsymbol y-\frac{cn\lambda_0||\boldsymbol x_j||_2}{2||\boldsymbol x_*||_2}
 \end{equation}
 
+\section{Alternative Method}
 
+The alternative method considers an alternative intermediate problem where the feasible set remains the same as $\mathcal{F}_{\lambda_0}$ in the original problem at $\lambda_0$ but the objective function changes to $g_{\lambda_1}$:
 
+\begin{gather}
+        \label{eq:dualmialt}
+        (\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})\equiv\underset{\boldsymbol\theta\in \mathbb{R}^{ n},\boldsymbol\gamma\in\mathbb{R}^p}{\mathrm{arg\,max}}g_{\lambda_1}(\boldsymbol\theta,\boldsymbol\gamma)\\
+        \begin{aligned}s.t.\quad (\boldsymbol\theta,\boldsymbol\gamma)\in \mathcal{F}_{\lambda_0}\nonumber.
+        \end{aligned}
+\end{gather}
+
+Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a bound for $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ can be derived:
+
+\begin{theorem}
+    \label{thm:1.1.alt}
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is bounded in a ball with center and radius
+    \begin{gather}
+        \begin{aligned}
+            \boldsymbol c_1\equiv\binom{\boldsymbol c_1^\theta}{\boldsymbol c_2^\gamma}&=\binom{\frac{1}{2}c(1-\rho)\boldsymbol y+(1+\frac{1}{2}c\rho\lambda_0)\boldsymbol\theta_{\lambda_0}}{(1+\frac{1}{2}c\rho\lambda_0)\boldsymbol\gamma_{\lambda_0}},\\
+            r_1&=\frac{c}{2}\sqrt{||\boldsymbol y||_2^2-\rho \boldsymbol y^T(\boldsymbol y-\lambda_0\boldsymbol\theta_{\lambda_0})},
+        \end{aligned}
+    \end{gather}
+    where
+    \begin{gather}
+        \begin{aligned}
+            c&\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1},\\
+            \rho&\equiv\frac{\boldsymbol y^T(\boldsymbol y-\lambda_0\boldsymbol\theta_{\lambda_0})}{||\boldsymbol y-\lambda_0\boldsymbol\theta_{\lambda_0}||_2^2+\lambda_0^2||\boldsymbol\gamma_{\lambda_0}||_2^2}.\nonumber
+        \end{aligned}
+    \end{gather}
+\end{theorem}
+
+The theorem  directly implies that $\boldsymbol\theta_{\lambda_1|\lambda_0}$ is in the ball with center $\boldsymbol c_1^\theta$ and radius $r_1$.
+
+Note if we restate $r_1$ and $\rho$ in terms of the primal solution, it becomes:
+
+\begin{gather}
+    \label{eq:thm1prim}
+    \begin{aligned}
+        r_1&=\frac{c}{2}\sqrt{(||\boldsymbol y||_2^2-\rho \boldsymbol y^TX\boldsymbol\beta_{\lambda_0})},\\
+        \rho&\equiv\frac{\boldsymbol y^TX\boldsymbol\beta_{\lambda_0}}{||X\boldsymbol\beta_{\lambda_0}||_2^2+n(1-\alpha)\lambda_0||\boldsymbol\beta_{\lambda_0}||_2^2}.
+    \end{aligned}
+\end{gather}
+
+Last, both $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ and $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ are the optimizer of constrained problems with the same objective function $g_{\lambda_1}$, but $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is the optimizer in the set $\mathcal{F}_{\lambda_0}$, while $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is the optimizer in the set $\mathcal{F}_{\lambda_1}$. Considering the second order expansion of $g_{\lambda_1}$ at $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$, we can derive a bound for $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$:
+
+\begin{theorem}
+    \label{thm:1.3.alt}
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $(\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ is known, $(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is bounded in the set $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_1|\lambda_0},\boldsymbol\gamma_{\lambda_1|\lambda_0})$ such that $\boldsymbol\theta_{\lambda_1}$ is bounded in a ball with center and radius
+    \begin{gather}
+        \begin{aligned}
+            c_2&=\boldsymbol\theta_{\lambda_1|\lambda_0}\\
+            r_2&=\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{\lambda_1|\lambda_0}||_2.
+        \end{aligned}
+    \end{gather}
+\end{theorem}
+
+Bound for $\gamma_{\lambda_1}$ is not considered since it is not necessary for the rest of derivation. For any $(\boldsymbol\theta',\boldsymbol\gamma')$, $(\boldsymbol\theta,\boldsymbol\gamma)\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\theta',\boldsymbol\gamma')$ means $\boldsymbol\theta$ is in a ball with center $\boldsymbol\theta'$ and radius $\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2$ and $\xi \boldsymbol x_j^T\boldsymbol\theta$ is linear in $\boldsymbol\theta$, so the maximum in \eqref{eq:ttilde} can be obtained easily:
+
+\begin{equation}
+    \label{eq:ttildexi.alt}
+    \Tilde{T}^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta',\boldsymbol\gamma')=\xi \boldsymbol x_j^T\boldsymbol\theta'+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2.
+\end{equation}
+
+Next, we need to maximize $\Tilde{T}^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta',\boldsymbol\gamma')$ subject to $(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1$.
+
+\begin{theorem}
+    \label{thm:2.1.alt}
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known,
+    \begin{gather}
+        \begin{aligned}
+            T^\xi_j&\equiv\underset{(\boldsymbol\theta',\boldsymbol\gamma')\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})}{\mathrm{max}}\Tilde{T}^\xi_j(\lambda_1,\lambda_0;\boldsymbol\theta',\boldsymbol\gamma')\\
+            &=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol c_1^\gamma||_2+\sqrt{1+c(\lambda_0-\lambda_1)}r_1\right).
+        \end{aligned}
+    \end{gather}
+\end{theorem}
