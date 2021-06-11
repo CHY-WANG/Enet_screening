@@ -14,22 +14,22 @@ where $\lambda_1,\lambda_2> 0$ are two tuning parameters that control the sizes 
     \underset{\beta\in \mathbb{R}^p}{\mathrm{min}}\frac{1}{2}||\boldsymbol y-X\boldsymbol\beta||_2^2+n\alpha\lambda||\boldsymbol\beta||_1+\frac{n(1-\alpha)}{2}\lambda||\boldsymbol\beta||_2^2,
 \end{equation}
 
-where the tuning parameter $\lambda>0$ controls the overall size of penalty and $\alpha\in(0,1)$ controls the balance between $L_1$ and $L_2$ penalties. This parametrization allows us to tune only the overall size $\lambda$ which is more relevant, while leaving $\alpha$ as fixed, instead of tuning $\lambda_1$ and $\lambda_2$ at the same time. Since this parameterization makes tuning problem simpler, it is usually more preferable in practice, for example, in \textbf{glmnet} pacakge. For the rest of the paper, we will only focus on the reparametrized problem \eqref{eq:enet} considering only $\lambda$ as tuning parameter.
+where the tuning parameter $\lambda>0$ controls the overall size of penalty and $\alpha\in(0,1)$ controls the balance between $L_1$ and $L_2$ penalties. This parametrization allows us to tune only the overall size $\lambda$ which is more relevant, while leaving the less important parameter $\alpha$ as fixed, instead of tuning $\lambda_1$ and $\lambda_2$ at the same time. Since this parameterization makes tuning problem simpler, it is usually more preferable in practice, for example, in the \textbf{glmnet} R package. For the rest of the paper, we will only focus on the reparametrized problem \eqref{eq:enet} considering only $\lambda$ as tuning parameter.
 
 The elastic net is a regularization method very similar to lasso problem \citep{tibshirani1996} with an extra $L_2$ penalty. The elastic net shares all the nice properties of lasso: automatic sparse solution and continuous shrinkage. This small difference of the elastic net, furthermore, brings some great advantages over the lasso method. First, the objective function in elastic net problem \eqref{eq:enet} is strictly convex so there will be a unique solution, while lasso problem solution may not be unique especially when the penalty tuning parameter is small. Second, in a case with a group of important but highly correlated features, elastic net tends to select all the them, but the lasso tends to select only one of them.
 
 The elastic net and lasso method have gain great success in the high dimension data analysis, where both the sample size $n$ and number of features $p$ are extremely large. Efficient algorithms to solve them are important because the dimensionality introduces great time and memory cost. One of the most promising techniques that can be applied on top of any other algorithms is \quotes{screening}, which takes advantages of the sparsity of the solution: if we know some of the features that have 0 coefficients in the solution before solving the problem, we can \quotes{discard} those features from the problem. Any solving algorithm can be applied to the reduced problem without those features much faster, but the solution will be exactly the same as the solution to the origin problem. The key is discarding more features and not make wrong discard. Moreover, a typical practice to solve penalized regression problems including elastic net and lasso is to solve the problem sequentially along a path of penalty tuning parameter values $\lambda_0,\lambda_1,...,\lambda_L$ and select the best value. In this case, when solving the problem at a $\lambda_l$, solutions at previous values $\lambda_0,...,\lambda_{l-1}$ are already known and can be utilized to conduct a more powerful screening that discards more features. There have been many studies on screening method for lasso problem \citep{ghaoui2010safe,Tibshirani2012,wang2013lasso,Zeng2021,wang2021adaptive} and they have been proven to bring significant speedup on popular lasso algorithms.
 
-Studies on screening methods for elastic net problem are still very limited. First, if we consider the naive form \eqref{eq:enet0} and consider $\lambda_2$ as fixed, then the $L_2$ penalty can be considered as a part of the first loss term by considering a augmented definition  of $X$ and $\boldsymbol y$. Then the problem is equivalent to lasso problem and any screening methods for lasso problem can be used. However, this form fixes the size of $L_2$ penalty $\lambda_2$ and the solution can behave poorly if $\lambda_2$ is not well chosen. Second, for the more popular form \eqref{eq:enet}, the screening method BEDPP for elastic net \citep{Zeng2021} has been proposed, but it does not utilize previous solutions and will lose power along the path. Third, there are some unsafe screening methods, such as strong rule \citep{Tibshirani2012}, but they require checks afterwards to make sure no feature is mistakenly discarded. Recently, the adaptive screening framework \citep{wang2021adaptive} which adaptively utilizes and reuses previous solutions as reference for any existing safe screening methods, can discard a great proportion of features while having low computation cost and has proven to outperform other screening methods in time cost for solving the whole path. As a result, a safe screening method for the popular form of elastic net \eqref{eq:enet} that can utilize previous solutions is desired and then an adaptive screening method can be applied to form an efficient elastic net solving algorithm.
+Studies on screening methods for elastic net problem are still very limited. First, if we consider the naive form \eqref{eq:enet0} and consider $\lambda_2$ as fixed, then the $L_2$ penalty can be considered as a part of the first loss term by considering a augmented definition of $X$ and $\boldsymbol y$. Then the problem is equivalent to a trivial lasso problem and any screening methods for lasso problem can be used. However, this form is not favorable in practice for the reasons we have discussed about and we only want to focus on the more popular form \eqref{eq:enet}. Second, the screening rule BEDPP for elastic net \citep{Zeng2021} has been proposed, but it cannot utilize previous solutions and will lose power along the path. Third, there are some unsafe screening rules, such as strong rule \citep{Tibshirani2012}, that can be combined with checks afterwards to make sure no feature is mistakenly discarded and produce safe screening. Strong rule can provide a significant speedup in a large class of problems including lasso and elastic net problems, and has been widely used, for example, in \textbf{glmnet} R package. However, recently, the adaptive screening framework \citep{wang2021adaptive} which adaptively utilizes and reuses previous solutions as reference for any existing safe screening rules, can discard a great proportion of features while having low computation cost and has proven to outperform other screening methods, including strong rule screening, by a large margin in time cost for solving the lasso problem. As a result, a safe screening rule for the elastic net that can utilize previous solutions is desired and then an adaptive screening method can utilize this rule to form an efficient algorithm to solve elastic net problem as well.
 
-In this paper, we propose a safe screening method for elastic net problem that utilizes previous solution as reference for enhanced power. In section 2 we will derive the safe screening rule and build it into the adaptive screening framework. In section 3, we will run experiments on both synthetic and real data sets to compare our method with other state-of-the-art screening methods. In section 4, we will discuss the results and some remarks.
+In this paper, we propose an adaptive safe screening method for elastic net problem that efficiently utilizes previous solution as reference for enhanced power. In section 2 we will derive the safe screening rule and build it into the adaptive screening framework to form an adaptive screening method. In section 3, we will run experiments on both synthetic and real data sets to compare our method with the other state-of-the-art screening method strong rule screening. In section 4, we will discuss the results and some remarks.
 
 
 
 \section{Screening Method}
 \subsection{Problem Formulation}
 
-A dual form of problem \eqref{eq:enet} can be given by (please see appendix for details):
+A dual form of problem \eqref{eq:enet} introducing extra variables can be given by (please see appendix for details):
 
 \begin{gather}
         \label{eq:dualtheta}
@@ -39,7 +39,7 @@ A dual form of problem \eqref{eq:enet} can be given by (please see appendix for 
         \end{aligned}
 \end{gather}
 
-where $\boldsymbol\theta\in \mathbb{R}^{n}$ and $\boldsymbol\gamma\in\mathbb{R}^p$ are the dual variables. We will use $\boldsymbol\mu$ to denote the combined vector $(\boldsymbol \theta,\boldsymbol\gamma)$. The dual problem becomes the minimization of the convex function $g(\boldsymbol\mu)$ within a convex feasible set $\mathcal{F}_\lambda$. Let $\boldsymbol\beta_\lambda$ denote the solution to the primal problem at penalty parameter value $\lambda$ and $\mu_{\lambda}=(\boldsymbol\theta_{\lambda},\boldsymbol\gamma_\lambda)$ denote the corresponding dual solution. The primal solution and dual solution can be connected by
+where $\boldsymbol\theta\in \mathbb{R}^{n}$ and $\boldsymbol\gamma\in\mathbb{R}^p$ are the dual variables. We will use $\boldsymbol\mu\in \mathbb{R}^{n+p}$ to denote the combined vector $(\boldsymbol \theta,\boldsymbol\gamma)$. The dual problem becomes the minimization of the convex function $g(\boldsymbol\mu)$ within a convex feasible set $\mathcal{F}_\lambda$. Let $\boldsymbol\beta_\lambda$ denote the solution to the primal problem at penalty parameter value $\lambda$ and $\boldsymbol\mu_{\lambda}=(\boldsymbol\theta_{\lambda},\boldsymbol\gamma_\lambda)$ denote the corresponding dual solution. The primal solution and dual solution can be connected by
 
 \begin{equation}
     \label{eq:dualprimal}
@@ -73,7 +73,7 @@ The KKT conditions \eqref{eq:kkt} also say that for any $\lambda_1$ if
     |\boldsymbol x_j^T\boldsymbol\theta_{1}|<n\alpha,
 \end{equation}
 
-we can safely conclude $\boldsymbol\beta_{1,j}=0$ and the corresponding $\boldsymbol x_j$ can be discarded for the optimization at $\lambda_1$. Although the left hand side of \eqref{eq:disc_cond} is unknown until the solution is obtained at the target $\lambda_1$, we can use the solution at the reference $\lambda_{0}$ to derive some bound for the left hand side: $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and then if $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)<n\alpha$ we can also safely conclude $\boldsymbol\beta_{1,j}=0$. The goal is to find a smaller $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ to make more discards. To construct such a bound, we consider the intermediate dual variable:
+we can safely conclude $\boldsymbol\beta_{1,j}=0$ and the corresponding $\boldsymbol x_j$ can be discarded for the optimization at $\lambda_1$. Although the left hand side of \eqref{eq:disc_cond} is unknown until the solution is obtained at the target $\lambda_1$, we can use the solution at the reference $\lambda_{0}$ to derive some upper bound for the left hand side: $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and then if $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)<n\alpha$ we can also safely conclude $\boldsymbol\beta_{1,j}=0$. The goal is to find a smaller $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ to make more discards. Note as $\lambda$ changes, both the dual function $g_\lambda$ and the feasible set $\mathcal{F}_\lambda$ change. To simplify the construction of the upper bound, we consider the intermediate dual problem:
 
 \begin{gather}
         \label{eq:dualmi}
@@ -82,14 +82,14 @@ we can safely conclude $\boldsymbol\beta_{1,j}=0$ and the corresponding $\boldsy
         \end{aligned}
 \end{gather}
 
-On one hand, compared to the origin dual problem \eqref{eq:dualtheta} at the reference $\lambda_0$, the intermediate problem \eqref{eq:dualmi} optimizes the same dual function on a slightly different feasible set. On the other hand, compared to the intermediate problem, the origin dual problem at the target $\lambda_1$ optimize a slightly different dual function on the same feasible set. Then we can find a region $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ based on the reference solution $\boldsymbol\mu_0$, that contains the intermediate solution ($\boldsymbol\mu_{1|0}\in \mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$) and after that find a region $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$ based on the intermediate solution $\boldsymbol\mu_{1|0}$, that contains the target solution  ($\boldsymbol\mu_1\in \mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$). Last if we find an upper bound for the double maximization problem in the two regions:
+On one hand, compared to the origin dual problem \eqref{eq:dualtheta} at the reference $\lambda_0$, the intermediate problem \eqref{eq:dualmi} optimizes the same dual function on a slightly reshaped feasible set. On the other hand, compared to the intermediate problem, the origin dual problem at the target $\lambda_1$ optimize a slightly different dual function on the same feasible set. Each pair of problems become more similar. Then we can find a region $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ based on the reference solution $\boldsymbol\mu_0$, that contains the intermediate solution ($\boldsymbol\mu_{1|0}\in \mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$) and after that find a region $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$ based on the intermediate solution $\boldsymbol\mu_{1|0}$, that contains the target solution  ($\boldsymbol\mu_1\in \mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$). Last if we find an upper bound for the double maximization problem in the two regions:
 
 \begin{equation}
     \label{eq:boundbound}
     T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq \underset{\boldsymbol\mu'\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)}{\mathrm{max}}\,\underset{\boldsymbol\mu\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')}{\mathrm{max}}|\boldsymbol x_j^T\boldsymbol\theta|,
 \end{equation}
 
-then it automatically satisfies $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and can be safely used for screening.
+then it automatically satisfies $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and can be safely used for screening. Note there is also a slightly different alternative method to construct an intermediate problem and the results will be briefly discussed in the appendix.
 
 In the special case when $\lambda_0=\lambda_{\max}$ as defined in \eqref{eq:lammax}, a form of the bound $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ has been derived in BEDPP for elastic net \citep{Zeng2021}:
 
@@ -166,7 +166,7 @@ where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\
 
 \begin{theorem}
     \label{thm:2.1}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $\mu_0$ is known, if we define
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $\boldsymbol\mu_0$ is known, if we define
     \begin{gather}
         \begin{aligned}
             T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)\equiv\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\xi \boldsymbol x_j^T \boldsymbol \theta_{0}+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{0}||_2\\+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}}\right\Vert_2\\
@@ -181,7 +181,7 @@ If we define $\boldsymbol r_0\equiv \boldsymbol y-X\boldsymbol\beta_{0}$ and $\h
 \begin{gather}
     \begin{aligned}
         T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)=  \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{0}+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{0}||_2\\
-        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{0}||_2^2}
+        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{0}||_2^2}.
     \end{aligned}
 \end{gather}
 
@@ -191,7 +191,7 @@ $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ being the maximum of it over $\xi=
     \label{eq:t}
     \begin{aligned}
         T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)= \left| \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0} \boldsymbol x_j^T \boldsymbol r_{0}\right|+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{0}||_2\\
-        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{0}||_2^2}
+        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{0}||_2^2}.
     \end{aligned}
 \end{gather}
 
@@ -221,7 +221,20 @@ else $t=$
 
 This choice of $t$ does not depend on $\boldsymbol x_j$ but will still be close to the optimal choice. The last two terms in \eqref{eq:t} will be the same across all $j$'s except for a multiplier of $||\boldsymbol x_j||_2$. We will denote $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ with the $t$ defined above as $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ and it will be the final upper bound we want.
 
-\subsection{Adaptive Safe Screening}
+\subsection{Safe Rule and Adaptive Safe Screening}
+
+All the previous derivations can be summarized in the following safe rule that discard features in the problem given a previous solution:
+
+\begin{theorem}
+    \label{thm:rule}
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max}]$, $j=1,2,...,p$ and assuming $\boldsymbol\mu_0$ is known,
+    \begin{enumerate}
+        \item If $\lambda_0=\lambda_{\max}$: $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ is given Theorem \ref{thm:0.1}. Else $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ is given in \eqref{eq:t},\eqref{eq:t0},\eqref{eq:tn0}.
+        \item If $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)<n\alpha$, then $[\boldsymbol\beta_{1}]_j=0$.
+    \end{enumerate}
+\end{theorem}
+
+Note no matter whether $\lambda_0=\lambda_{\max}$ or not, the upper bound $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ will becomes the upper bound in EDPP rule when $\alpha$ goes to 1. Our proposed rule can be considered as a generalization of EDPP rule with no impact on the performance in the case when $\alpha=1$.
 
 An algorithm with adaptive safe screening framework \citep{wang2021adaptive} using the proposed safe screening rule can be built to solve the elastic net problem along a path of $L$ tuning parameter values $\lambda_1,...,\lambda_L$ as described below:
 
@@ -234,7 +247,7 @@ An algorithm with adaptive safe screening framework \citep{wang2021adaptive} usi
     \Initialize{$\{\boldsymbol x_j^T\boldsymbol y\}_{j=1}^p$, $\lambda_{ref}=\lambda_0=\lambda_{max}$}
     
     \For{$l\xleftarrow{}$ 1 \KwTo L}{
-        Safe Screening: $\mathcal{S}_{l}\xleftarrow{}\{j:T_j(\lambda_l,\lambda_{ref}|\boldsymbol\mu_{ref})\geq n\alpha\}$ as in Theorem \ref{thm:0.1} or \eqref{eq:t},\eqref{eq:t0},\eqref{eq:tn0}.
+        Safe Screening: $\mathcal{S}_{l}\xleftarrow{}\{j:T_j(\lambda_l,\lambda_{ref}|\boldsymbol\mu_{ref})\geq n\alpha\}$ (features not discarded by Theorem \ref{thm:rule}).
         
         Strong Screening: $\mathcal{R}_{l}\xleftarrow{}\{j\in \mathcal{S}_{l}:x_j$ not discarded by any addition non-safe screening$\}$.
         
@@ -263,7 +276,7 @@ An algorithm with adaptive safe screening framework \citep{wang2021adaptive} usi
 
 Assuming the typical setting of a high-dimensional data set where $p\xrightarrow[]{}\infty$, the computational cost in safe screening (Theorem \ref{thm:0.1} or \eqref{eq:t},\eqref{eq:t0},\eqref{eq:tn0}) is approximately the cost of computing $\boldsymbol x_j^T\boldsymbol y,\boldsymbol x_j^T\boldsymbol x_*,\boldsymbol x_j^T\boldsymbol r_{ref}$ and $||\boldsymbol\beta_{ref}||_2$. The first two terms only need to be computed once and can be reused for the whole path. The latter two only need to be updated when updating the reference and can be reused until next update of reference. The rest steps of the safe screening can be considered as almost free.
 
-In the step of strong screening, any addition screening methods can be implemented regardless of their safeness. For example, it can be active set cycling \citep{lee2007efficient}, strong rule \citep{Tibshirani2012}, no addition screening (simply $\mathcal{R}_l=\mathcal{S}_l$) or combination of screening methods. We will use a combination of strong rule on top of active set cycling in this steps as experiments show this can provide most speed up. Active set cycling is a simple idea that discards all the features that have zero coefficients in the reference solution and does not require any computation. Strong rule discards feature $j$ if
+In the step of strong screening, any addition screening methods can be implemented regardless of their safeness. For example, it can be active set cycling \citep{lee2007efficient}, strong rule \citep{Tibshirani2012}, no addition screening (simply $\mathcal{R}_l=\mathcal{S}_l$) or combination of screening methods. We will use a combination of strong rule on top of active set cycling in this steps as experiments show this can provide most speed up. Active set cycling is a simple idea that discards all the features that have zero coefficients in the previous solution $\lambda_{l-1}$ and does not require any computation. Strong rule discards feature $j$ if
 
 \begin{equation}
     \label{eq:strong}
@@ -280,13 +293,15 @@ A naive choice of condition for updating safe screening reference will be always
     (l-ref-1)|\mathcal{S}_{l}|-\sum_{l'=ref+1}^{l-1}|\mathcal{S}_{l'}|<p
 \end{equation}
 
-and update the reference to $\lambda_l$ at that point. This condition predicts the timing of updating that best optimizes the total cost of solving the whole path and has shown to outperform other state-of-the-art screening methods in lasso problem. We will show it provides significant speed up in elastic problem as well.
+and update the reference to $\lambda_l$ at that point. This condition predicts the timing of updating that best optimizes the total cost of solving the whole path and has shown to outperform other state-of-the-art screening methods in lasso problem. We will show it provides significant speed up in elastic problem as well, compared to the naive sequential updating.
 
 \section{Experiments}
 
+We compared our proposed adaptive screening method (Adaptive), the sequential version of our proposed screening method (Sequential) and sequential strong rule for elastic net (SSR) in both simulated data sets and real data sets. SSR is the most efficient existing screening method for elastic net problem. Active cycling is incorporated into all methods. The elastic net solving algorithm is chosen to be the pathwise coordinate descent. All the methods are implemented and tested in the \textbf{biglasso} R package.
+
 \subsection{Simulation Study}
 
-We compared our proposed adaptive screening method (Adaptive) to sequential strong rule for elastic net (SSR) in simulated data sets. Active cycling is incorporated into both methods.
+
 
 The data is simulated from the model: $y=X\beta+0.1\epsilon$. The elements of $X$ and $\epsilon$ are sampled i.i.d from $N(0,1)$. The coefficient vector $\beta$ contains $s$ randomly selected elements equally spaced between $[-\beta_{\max},\beta_{\max}]$, with the remaining $p-s$ elements equal to zero. Each setting is replicated $10$ times to calculate the average time needed to solve the coefficient path. By default we set $p=10,000$, $n=1,000$, $s=20$, $\beta_{\max}=1$, $\alpha=0.9$, $L=100$, $\lambda_{\min}/\lambda_{\max}=0.05$. We consider the following cases where one of the variables above is varying at a time:
 
@@ -302,19 +317,53 @@ The data is simulated from the model: $y=X\beta+0.1\epsilon$. The elements of $X
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{enet1.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: Varying proportion of lasso penalty: $\alpha$. Second column: varying sample size $n$. Third column: varying number of features $p$. Fourth column: varying signal strength $\beta_{\max}$}
+    \includegraphics[width=\textwidth]{enet1.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: Varying proportion of lasso penalty: $\alpha$. Second column: varying sample size $n$. Third column: varying number of features $p$. Fourth column: varying signal strength $\beta_{\max}$.}
     \label{fig:sim1}
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{enet2.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: varying sparsity $s$. Second column: Varying number of grid points $L$. Third column: Varying range of grid $\lambda_{\min}/\lambda_{\max}$.}
+    \includegraphics[width=0.82\textwidth]{enet2.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: varying sparsity $s$. Second column: Varying number of grid points $L$. Third column: Varying range of grid $\lambda_{\min}/\lambda_{\max}$.}
     \label{fig:sim2}
 \end{figure}
 
+The time spent on solving the whole path in seconds and the relative time compared to SSR method is summarized in Figure \ref{fig:sim1} and \ref{fig:sim2}. First, the sequential version of our proposed screening rule performs almost the same as SSR except in some extreme cases, and the adaptive version of our proposed screening rule outperforms the other two methods universally, with 3-4 $\times$ speedup in most cases. Second, the proposed adaptive method has the best performance when $\alpha$ is close to $1$. An $\alpha$ close to $1$ is a typical choice in practice because elastic problem becomes close to lasso problem and produces more sparse solution. Also, note $\alpha=1$, which corresponds to the lasso problem, is also included in the experiment, showing that our proposed method smoothly extends from lasso problem to a larger class of elastic net problem. Third, other factors show the adaptive screening is most favorable in a high-dimensional setting with large data size $n,p$ and small number of truly active features $s$ and in a path where $\lambda$ values are closely spaced when either the number of points on path $L$ is large or the path focuses on larger $\lambda$ values (larger $\lambda_{\min}/\lambda_{\max}$). Last, the effect of the signal strength $\boldsymbol\beta_{\max}$ has an interesting pattern. One would expect as the signal strengthens, screening methods should perform better at detecting 0 coefficients, which is true in the first halve of the range of $\boldsymbol\beta_{\max}$. After that, however, $\boldsymbol\beta_{\max}$ seems to have a negative effect on the adaptive method. The reason may be that we introduce an extra variable $\boldsymbol\gamma$ and result in a screening rule that is loose when $\boldsymbol\beta$ is large. Nevertheless, the adaptive method is still much faster than other methods regardless of the signal strength. We have also checked other factors, such as auto-correlation or block-correlation structure of the feature $X$ and number of threads in parallel computing, but we won't show the results here as there is no interesting pattern.
+
+\subsection{Real Data}
+
+In this section, we consider a ultra high-dimensional real data set that cannot be fit into the memory. This scenario is the greatest challenge to an optimizing algorithm and a good screening method will be most wanted. The data from the Genetic Risk Assessment of Defibrillator Events study (GRADE, \url{https://www.clinicaltrials.gov/ct2/show/NCT02045043}) is a genome-wide genetic data and were collected for 1,080 subjects diagnosed with cardiomyopathy and who had undergone surgery to receive an implantable cardioverter defibrillator in the past 5 years. After imputation using the Haplotype Reference Consortium as a reference genome and filtering for quality control \citep{Das2016}, there were $p=11,830,470$ SNPs which used as features. The size of the file storing the feature matrix is 96G and we conduct the test on a machine with 32G RAM. A variety of clinical data was collected on these individuals. To examine the performance of screening methods for elastic net problem, we focused on the numeric response left ventricular ejection fraction (LVEF). LVEF measures the proportion of blood being pumped out of the left ventricle of the heart with each contraction. Lower values are associated with more severe heart disease. LVEF data was available for $n=973$ subjects and they will be considered as the sample for this analysis. We chose a relatively large $\lambda_{\min} =0.1\lambda_{\max}$ to avoid having much more features selected than the number of observations. This choice will lead to a solution path with $1106$ to $4791$ features selected at the end of the path, depending on the value of $\alpha$. We choose number of $\lambda$ values to be the default value $L=100$ and test a grid of $\alpha$ values $\{1,0.95,0.9,0.8,0.6,0.4,0.2\}$. The time spent to solve the whole path in minutes for different screening methods and $\alpha$'s is shown in Table~\ref{Tab:lvef}. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllll}
+\toprule
+Screening method & SSR\,\,\,\,\,\,\,\,\,    & Sequential   & Adaptive  \\
+\midrule
+$\alpha=1$ & 87.6 & 89.3 & 52.3  \\
+$\alpha=0.95$ & 87.5 & 89.6 & 61.5  \\
+$\alpha=0.9$ & 88.1 & 89.5 & 66.8  \\
+$\alpha=0.8$ & 87.6 & 89.7 & 72.2  \\
+$\alpha=0.6$ & 88.2 & 90.7 & 77.8 \\
+$\alpha=0.4$ & 88.8 & 91.7 & 84.4  \\
+$\alpha=0.2$ & 89.3 & 94.5 & 91.1  \\
+
+\bottomrule
+\end{tabular}
+\caption{Average computing time in minutes the LVEF analysis with elastic net.\label{Tab:lvef}}
+\end{table}
+
+The proposed adaptive screening is the fastest in most cases, especially in the case when $\alpha$ is large. Even if $\alpha$ is extremely small, it does not do much harm to the speed. The proposed sequential screening performs very similar to strong rule screening.
+
+\section{Discussion}
+
+In this paper, we derived a safe screening rule for pathwise elastic net problem that utilizes previous solution as a reference for enhanced screening power by considering an intermediate problem that connects the reference and the target. We show that it can be built into a adaptive screening method that performs 3-4 times faster than the other state-of-the-art method SSR in most cases. The adaptive method is implemented in the public available \textbf{biglasso} R package.
+
+Our result covers the more popular used form of elastic net problem \eqref{eq:enet}. This form is not only more useful in practice, but is also mathematical interesting because it cannot be reduced to lasso problem. In fact our proposed safe screening method is the only existing method we know of that works on penalty function with varying shape as $\lambda$ varies. A constant shape penalty $\lambda p(\boldsymbol\beta)$, such as lasso penalty or group lasso penalty can be rewritten as $p(\lambda\boldsymbol\beta)$, but the elastic net penalty does not share this property. Our result suggests possibility on a larger family of penalty functions.
+
+Besides the standard elastic net problem we have covered, there is also a family of elastic net penalized generalized regression problems that can benefit from screening, but as far as we know, the strong rule screening is the only available screening method for these problems. Since our derivation has already tackled the trickiest part which is the varying shape of elastic net penalty function, similar technique can also help to derive safe rule and thus adaptive safe screening for elastic net penalized generalized regression problems, such as elastic net penalized logistic regression.
+
 \appendix
 \appendixpage
-
 
 \section{Derivation of the Dual Problem}
 
@@ -789,7 +838,7 @@ The alternative method considers an alternative intermediate problem where the f
         \end{aligned}
 \end{gather}
 
-Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a region that contains $\boldsymbol\mu_{1|0}$ can be derived:
+We will only show the results and omit the proofs, as the proofs are very similar. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a region that contains $\boldsymbol\mu_{1|0}$ can be derived:
 
 \begin{theorem}
     \label{thm:1.1.alt}
@@ -853,3 +902,5 @@ Next, we need to maximize $\Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')$
         \end{aligned}
     \end{gather}
 \end{theorem}
+
+The form of the upper bound is similar to that of the EDPP for lasso problem, except when $\alpha\xrightarrow[]{}1$, the last term $\sqrt{1+c(\lambda_0-\lambda_1)}r_1$ will be larger than the corresponding term of the EDPP for lasso by a factor of $\sqrt{1+c(\lambda_0-\lambda_1)}$ that is strictly greater than 1. This suggests this alternative construction of intermediate problem introduces extra unnecessary looseness in the upper bound.
