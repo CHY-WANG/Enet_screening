@@ -6,14 +6,12 @@ In a linear regression setting with $n$ samples and $p$ features. Let $\boldsymb
     \label{eq:enet0}
     \underset{\beta\in \mathbb{R}^p}{\mathrm{min}}\frac{1}{2}||\boldsymbol y-X\boldsymbol\beta||_2^2+n\lambda_1||\boldsymbol\beta||_1+\frac{n}{2}\lambda_2||\boldsymbol\beta||_2^2,
 \end{equation}
-
 where $\lambda_1,\lambda_2> 0$ are two tuning parameters that control the sizes of $L_1$ and $L_2$ penalties and $\boldsymbol\beta\in\mathbb{R}^p$ is the coefficient vectors for the $p$ features. A useful reparametrization of this problem is:
 
 \begin{equation}
     \label{eq:enet}
     \underset{\beta\in \mathbb{R}^p}{\mathrm{min}}\frac{1}{2}||\boldsymbol y-X\boldsymbol\beta||_2^2+n\alpha\lambda||\boldsymbol\beta||_1+\frac{n(1-\alpha)}{2}\lambda||\boldsymbol\beta||_2^2,
 \end{equation}
-
 where the tuning parameter $\lambda>0$ controls the overall size of penalty and $\alpha\in(0,1)$ controls the balance between $L_1$ and $L_2$ penalties. This parametrization allows us to tune only the overall size $\lambda$ which is more relevant, while leaving the less important parameter $\alpha$ as fixed, instead of tuning $\lambda_1$ and $\lambda_2$ at the same time. Since this parameterization makes tuning problem simpler, it is usually more preferable in practice, for example, in the \textbf{glmnet} R package. For the rest of the paper, we will only focus on the reparametrized problem \eqref{eq:enet} considering only $\lambda$ as tuning parameter.
 
 The elastic net is a regularization method very similar to lasso problem \citep{tibshirani1996} with an extra $L_2$ penalty. The elastic net shares all the nice properties of lasso: automatic sparse solution and continuous shrinkage. This small difference of the elastic net, furthermore, brings some great advantages over the lasso method. First, the objective function in elastic net problem \eqref{eq:enet} is strictly convex so there will be a unique solution, while lasso problem solution may not be unique especially when the penalty tuning parameter is small. Second, in a case with a group of important but highly correlated features, elastic net tends to select all the them, but the lasso tends to select only one of them.
@@ -38,14 +36,12 @@ A dual form of problem \eqref{eq:enet} introducing extra variables can be given 
             &||X^T\boldsymbol\theta-\sqrt{n(1-\alpha)\lambda}\boldsymbol\gamma||_\infty\leq n\alpha\}\nonumber,
         \end{aligned}
 \end{gather}
-
 where $\boldsymbol\theta\in \mathbb{R}^{n}$ and $\boldsymbol\gamma\in\mathbb{R}^p$ are the dual variables. We will use $\boldsymbol\mu\in \mathbb{R}^{n+p}$ to denote the combined vector $(\boldsymbol \theta,\boldsymbol\gamma)$. The dual problem becomes the minimization of the convex function $g(\boldsymbol\mu)$ within a convex feasible set $\mathcal{F}_\lambda$. Let $\boldsymbol\beta_\lambda$ denote the solution to the primal problem at penalty parameter value $\lambda$ and $\boldsymbol\mu_{\lambda}=(\boldsymbol\theta_{\lambda},\boldsymbol\gamma_\lambda)$ denote the corresponding dual solution. The primal solution and dual solution can be connected by
 
 \begin{equation}
     \label{eq:dualprimal}
     \boldsymbol\theta_\lambda=\frac{\boldsymbol y-X\boldsymbol\beta_\lambda}{\lambda},\quad \boldsymbol\gamma_\lambda=\sqrt{\frac{n(1-\alpha)}{\lambda}}\boldsymbol\beta_\lambda,
 \end{equation}
-
 and the KKT conditions for the primal problem~\eqref{eq:enet} can be expressed as:
 
 \begin{gather}
@@ -54,7 +50,6 @@ and the KKT conditions for the primal problem~\eqref{eq:enet} can be expressed a
     & \boldsymbol\beta_{\lambda,j}\neq0\implies  \boldsymbol x_j^T\boldsymbol\theta_\lambda-n(1-\alpha)\boldsymbol\beta_{\lambda,j}=n\alpha\textit{sign}(\boldsymbol\beta_{\lambda,j}).
     \end{aligned}
 \end{gather}
-
 for any $j$. Combining \eqref{eq:dualprimal} and \eqref{eq:kkt} we have a trivial closed form solution for the problem at some $\lambda$ values:
 
 \begin{gather}
@@ -63,7 +58,6 @@ for any $j$. Combining \eqref{eq:dualprimal} and \eqref{eq:kkt} we have a trivia
         \boldsymbol\beta_\lambda=0\iff \lambda \geq \lambda_{\max}\equiv \max_j \frac{|\boldsymbol x_j^T\boldsymbol y|}{n\alpha}
     \end{aligned}
 \end{gather}
-
 Thus, when solving the problems on a grid of $L+1$ decreasing $\lambda$ values: $\lambda_0>\lambda_1>...>\lambda_L>0$, it makes more sense to choose $\lambda_0\leq\lambda_{\max}$ to take advantage of the known solution. If an algorithm solve the problems sequentially in decreasing order of $\lambda$, then solution at $\lambda_{l'}$ will be known before solving the problem at $\lambda_l$ if $l'<l$. In the rest of the paper, we will derive screening method for such a path-wise structure. Also, without loss of generality, we will derive the screening method for the problem at $\lambda_1$ assuming the solution at $\lambda_0$ is known and can be used as a reference for screening. The same method can be applied to any pair of $\lambda_{l}$ and $\lambda_{l'}$. For simplicity, we will use $\boldsymbol\beta_l,\boldsymbol\mu_l,\boldsymbol\theta_l,\boldsymbol\gamma_l$ to denote the solution at any $\lambda_l$.
 
 The KKT conditions \eqref{eq:kkt} also say that for any $\lambda_1$ if 
@@ -72,7 +66,6 @@ The KKT conditions \eqref{eq:kkt} also say that for any $\lambda_1$ if
     \label{eq:disc_cond}
     |\boldsymbol x_j^T\boldsymbol\theta_{1}|<n\alpha,
 \end{equation}
-
 we can safely conclude $\boldsymbol\beta_{1,j}=0$ and the corresponding $\boldsymbol x_j$ can be discarded for the optimization at $\lambda_1$. Although the left hand side of \eqref{eq:disc_cond} is unknown until the solution is obtained at the target $\lambda_1$, we can use the solution at the reference $\lambda_{0}$ to derive some upper bound for the left hand side: $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and then if $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)<n\alpha$ we can also safely conclude $\boldsymbol\beta_{1,j}=0$. The goal is to find a smaller $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ to make more discards. Note as $\lambda$ changes, both the dual function $g_\lambda$ and the feasible set $\mathcal{F}_\lambda$ change. To simplify the construction of the upper bound, we consider the intermediate dual problem:
 
 \begin{gather}
@@ -88,7 +81,6 @@ On one hand, compared to the origin dual problem \eqref{eq:dualtheta} at the ref
     \label{eq:boundbound}
     T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq \underset{\boldsymbol\mu'\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)}{\mathrm{max}}\,\underset{\boldsymbol\mu\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')}{\mathrm{max}}|\boldsymbol x_j^T\boldsymbol\theta|,
 \end{equation}
-
 then it automatically satisfies $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and can be safely used for screening. Note there is also a slightly different alternative method to construct an intermediate problem and the results will be briefly discussed in the appendix.
 
 In the special case when $\lambda_0=\lambda_{\max}$ as defined in \eqref{eq:lammax}, a form of the bound $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ has been derived in BEDPP for elastic net \citep{Zeng2021}:
@@ -103,7 +95,6 @@ In the special case when $\lambda_0=\lambda_{\max}$ as defined in \eqref{eq:lamm
         \end{aligned}
     \end{gather}
 \end{theorem}
-
 Thus, in rest of the derivation, we will focus on the the case when $\lambda_0<\lambda_{\max}$. These two cases together will cover the whole solution path.
 
 \subsection{Intermediate and Target Dual Solutions Regions}
@@ -120,7 +111,6 @@ In this section, we will derive the two regions $\mathcal{A}^1$ and $\mathcal{A}
         \end{aligned}
     \end{gather}
 \end{theorem}
-
 where $c\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1}$. Looking at the form of the dual function \eqref{eq:dualtheta}, $\boldsymbol\mu_1=(\boldsymbol\theta_1,\boldsymbol\gamma_1)$ is the projection of $(\frac{\boldsymbol y}{\lambda_1},0)$ onto $\mathcal{F}_{\lambda_1}$, while in the intermediate problem \eqref{eq:dualmi}, $\boldsymbol\mu_{1|0}=(\boldsymbol\theta_{1|0},\boldsymbol\gamma_{1|0})$ is the projection of a different point $(\frac{\boldsymbol y}{\lambda_0},0)$ onto the same set $\mathcal{F}_{\lambda_1}$. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a region that contains the target $\boldsymbol\mu_1$ can be derived:
 
 \begin{theorem}
@@ -133,7 +123,6 @@ where $c\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1}$. Looking at the fo
         \end{aligned}
     \end{gather}
 \end{theorem}
-
 Note the result is valid for any $t\geq 0$. Instead of choosing a $t$ at this step as in the EDPP method, we will decide the choice of $t$ in the end of next subsection.
 
 \subsection{Upper Bound of the Double Maximization}
@@ -144,14 +133,12 @@ To find the bound in \eqref{eq:boundbound}, we can first consider the first maxi
 \begin{equation}
     \Tilde{T}_j(\lambda_1,\lambda_0|\boldsymbol\mu')\equiv\underset{\boldsymbol\mu\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')}{\mathrm{max}}|\boldsymbol x_j^T\boldsymbol\theta|,
 \end{equation}
-
 and it can be broken into two sub-problems:
 
 \begin{equation}
     \label{eq:ttilde}
     \Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')\equiv\underset{\boldsymbol\mu\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')}{\mathrm{max}}\xi \boldsymbol x_j^T\boldsymbol\theta,
 \end{equation}
-
 where $\xi\in\{-1,1\}$. The sub-problem \eqref{eq:ttilde} is maximizing a linear function in a ball with center $\boldsymbol c_2$ and radius $r_2$ and the maximum is easy to obtain:
 
 \begin{gather}
@@ -161,7 +148,6 @@ where $\xi\in\{-1,1\}$. The sub-problem \eqref{eq:ttilde} is maximizing a linear
         &=\xi\left( \frac{1}{2}(\frac{1-t}{\lambda_0}+c)\boldsymbol x_j^T\boldsymbol y+\frac{t+1}{2}\boldsymbol x_j^T\boldsymbol\theta'\right)+\frac{||\boldsymbol x_j||_2|1-t|}{2}\left\Vert\binom{\boldsymbol\theta'-\left(\frac{1}{\lambda_0}+\frac{c}{1-t}\right)\boldsymbol y}{\boldsymbol\gamma'}\right\Vert_2,\\
     \end{aligned}
 \end{gather}
-
 where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\boldsymbol v_2||_2$ for any vector $\boldsymbol v_1,\boldsymbol v_2$. There is an extra parameter $t$, and this bound will be valid for all $t\geq 0$. The maximum of $\Tilde{T}^\xi_j$ on $\mathcal{A}^1$ does not have a simple close form, so we consider an upper bound for it instead.
 
 \begin{theorem}
@@ -184,7 +170,6 @@ If we define $\boldsymbol r_0\equiv \boldsymbol y-X\boldsymbol\beta_{0}$ and $\h
         +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{0}||_2^2}.
     \end{aligned}
 \end{gather}
-
 $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ being the maximum of it over $\xi=-1,1$ is
 
 \begin{gather}
@@ -198,20 +183,19 @@ $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ being the maximum of it over $\xi=
 Last, we need to choose a $t\geq 0$. An optimal choice will be the $t$ that minimizes $T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$. This choice results in a complicated form of $t$ and different values of $t$ have to be chosen for different $\boldsymbol x_j$, which may result in additional computation cost that outweighs the gain from screening. Instead, we choose the $t$ that minimizes a simpler objective
 
 \begin{equation}
-    \label{eq:t0}
     \frac{t}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}}\right\Vert_2.
 \end{equation}
 
 The solution will be $t=0$ if
 
 \begin{equation}
-    \label{eq:tn0}
-    \frac{1}{\lambda_0^2}||\hat{\boldsymbol y}_{0}||_2^2+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol\beta_{0}||_2^2\leq 0,
+    \label{eq:t0}
+    \frac{1}{\lambda_0^2}||\hat{\boldsymbol y}_{0}||_2^2+\frac{2\lambda_1-\lambda_0}{\lambda_0\lambda_1}n(1-\alpha)||\boldsymbol\beta_{0}||_2^2\leq 0.
 \end{equation}
-
-else $t=$
+Else $t=$
 
 \begin{gather}
+    \label{eq:tn0}
     \begin{aligned}
         \left(1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right.\\
         \left.-c^2\lambda_0^2\sqrt{\frac{||\boldsymbol y||_2^2\left(||\hat{\boldsymbol y}_{0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{0}||_2^2\right)-\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+\frac{\lambda_0(2\lambda_1-\lambda_0)}{\lambda_1}n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}}
@@ -233,7 +217,6 @@ All the previous derivations can be summarized in the following safe rule that d
         \item If $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)<n\alpha$, then $[\boldsymbol\beta_{1}]_j=0$.
     \end{enumerate}
 \end{theorem}
-
 Note no matter whether $\lambda_0=\lambda_{\max}$ or not, the upper bound $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ will becomes the upper bound in EDPP rule when $\alpha$ goes to 1. Our proposed rule can be considered as a generalization of EDPP rule with no impact on the performance in the case when $\alpha=1$.
 
 An algorithm with adaptive safe screening framework \citep{wang2021adaptive} using the proposed safe screening rule can be built to solve the elastic net problem along a path of $L$ tuning parameter values $\lambda_1,...,\lambda_L$ as described below:
@@ -282,7 +265,6 @@ In the step of strong screening, any addition screening methods can be implement
     \label{eq:strong}
     \boldsymbol x_j^T\boldsymbol r_{ref}<\alpha(2\lambda_l-\lambda_{ref}).
 \end{equation}
-
 Since $\boldsymbol x_j^T\boldsymbol r_{ref}$ is already computed in the safe screening step, strong rule can also considered as free. If non-safe screening methods are used, after the convergence of the elastic net solving algorithm, a check on the KKT conditions \eqref{eq:kkt} is required. Because KKT conditions are sufficient condition for the solution, if the check passes then there will be no incorrect discard. Else, we need to add the features that violate the KKT conditions into the problem and solve the problem. Because there is only a finite number of features, the check will pass after finite number if iteration. Moreover, safe screening step can narrow down the range of features that need to be checked from $1,..,p$ to $\mathcal{S}_l$ and thus make this step much faster.
 
 Any elastic net solving algorithm can be used to solve the reduced problem in $\mathcal{R}_l$ as long as the algorithm converges to the minimum of the reduced problem. We choose pathwise coordinate descent \citep{friedman2007pathwise} because it has shown to outperform other algorithms especially in high-dimensional cases.
@@ -292,7 +274,6 @@ A naive choice of condition for updating safe screening reference will be always
 \begin{equation}
     (l-ref-1)|\mathcal{S}_{l}|-\sum_{l'=ref+1}^{l-1}|\mathcal{S}_{l'}|<p
 \end{equation}
-
 and update the reference to $\lambda_l$ at that point. This condition predicts the timing of updating that best optimizes the total cost of solving the whole path and has shown to outperform other state-of-the-art screening methods in lasso problem. We will show it provides significant speed up in elastic problem as well, compared to the naive sequential updating.
 
 \section{Experiments}
@@ -303,7 +284,7 @@ We compared our proposed adaptive screening method (Adaptive), the sequential ve
 
 
 
-The data is simulated from the model: $y=X\beta+0.1\epsilon$. The elements of $X$ and $\epsilon$ are sampled i.i.d from $N(0,1)$. The coefficient vector $\beta$ contains $s$ randomly selected elements equally spaced between $[-\beta_{\max},\beta_{\max}]$, with the remaining $p-s$ elements equal to zero. Each setting is replicated $10$ times to calculate the average time needed to solve the coefficient path. By default we set $p=10,000$, $n=1,000$, $s=20$, $\beta_{\max}=1$, $\alpha=0.9$, $L=100$, $\lambda_{\min}/\lambda_{\max}=0.05$. We consider the following cases where one of the variables above is varying at a time:
+The data is simulated from the model: $y=X\beta+0.1\epsilon$. The elements of $X$ and $\epsilon$ are sampled i.i.d from $N(0,1)$. The coefficient vector $\beta$ contains $s$ randomly selected elements equally spaced between $[-\beta_{\max},\beta_{\max}]$, with the remaining $p-s$ elements equal to zero. An elastic net problem is solved along a path of $L$ $\lambda$ values equally spaced on log scale between $(\lambda_{\max},\lambda_{\min}]$ where $\lambda_{\max}$ is determined by data. Each setting is replicated $10$ times to calculate the average time needed to solve the coefficient path. By default we set $p=10,000$, $n=1,000$, $s=20$, $\beta_{\max}=1$, $\alpha=0.9$, $L=100$, $\lambda_{\min}/\lambda_{\max}=0.05$. We consider the following cases where one of the variables above is varying at a time:
 
 \begin{enumerate}
     \item \textbf{Varying proportion of lasso penalty:} $\alpha$ from $0.2$ to $0.999$.
@@ -315,15 +296,15 @@ The data is simulated from the model: $y=X\beta+0.1\epsilon$. The elements of $X
     \item \textbf{Varying range of grid:}  $\lambda_{\min}/\lambda_{\max}$ from $0.5$ to $0.002$.
 \end{enumerate}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{enet1.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: Varying proportion of lasso penalty: $\alpha$. Second column: varying sample size $n$. Third column: varying number of features $p$. Fourth column: varying signal strength $\beta_{\max}$.}
+    \includegraphics[width=\textwidth]{enet1.pdf}    \caption{Comparing speed of screening methods for elastic model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: Varying proportion of lasso penalty: $\alpha$. Second column: varying sample size $n$. Third column: varying number of features $p$. Fourth column: varying signal strength $\beta_{\max}$.}
     \label{fig:sim1}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.82\textwidth]{enet2.pdf}    \caption{Comparing speed of screening methods for lasso model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: varying sparsity $s$. Second column: Varying number of grid points $L$. Third column: Varying range of grid $\lambda_{\min}/\lambda_{\max}$.}
+    \includegraphics[width=0.82\textwidth]{enet2.pdf}    \caption{Comparing speed of screening methods for elastic net model under different settings. Top row: computation time in second. Bottom row: relative computation time compared to SSR. First column: varying sparsity $s$. Second column: Varying number of grid points $L$. Third column: Varying range of grid $\lambda_{\min}/\lambda_{\max}$.}
     \label{fig:sim2}
 \end{figure}
 
@@ -331,26 +312,80 @@ The time spent on solving the whole path in seconds and the relative time compar
 
 \subsection{Real Data}
 
-In this section, we consider a ultra high-dimensional real data set that cannot be fit into the memory. This scenario is the greatest challenge to an optimizing algorithm and a good screening method will be most wanted. The data from the Genetic Risk Assessment of Defibrillator Events study (GRADE, \url{https://www.clinicaltrials.gov/ct2/show/NCT02045043}) is a genome-wide genetic data and were collected for 1,080 subjects diagnosed with cardiomyopathy and who had undergone surgery to receive an implantable cardioverter defibrillator in the past 5 years. After imputation using the Haplotype Reference Consortium as a reference genome and filtering for quality control \citep{Das2016}, there were $p=11,830,470$ SNPs which used as features. The size of the file storing the feature matrix is 96G and we conduct the test on a machine with 32G RAM. A variety of clinical data was collected on these individuals. To examine the performance of screening methods for elastic net problem, we focused on the numeric response left ventricular ejection fraction (LVEF). LVEF measures the proportion of blood being pumped out of the left ventricle of the heart with each contraction. Lower values are associated with more severe heart disease. LVEF data was available for $n=973$ subjects and they will be considered as the sample for this analysis. We chose a relatively large $\lambda_{\min} =0.1\lambda_{\max}$ to avoid having much more features selected than the number of observations. This choice will lead to a solution path with $1106$ to $4791$ features selected at the end of the path, depending on the value of $\alpha$. We choose number of $\lambda$ values to be the default value $L=100$ and test a grid of $\alpha$ values $\{1,0.95,0.9,0.8,0.6,0.4,0.2\}$. The time spent to solve the whole path in minutes for different screening methods and $\alpha$'s is shown in Table~\ref{Tab:lvef}. 
+\subsubsection{Traditional Data Sets}
 
-\begin{table}[H]
+In the section we compare the 3 screening methods on 4 real data sets that have traditional high-dimensional structures. An elastic net problem is solved along a grid of $L=100$ $\lambda$ values equally spaced on log scale between $(\lambda_{\max},\lambda_{\min}]$ where $\lambda_{\max}$ is determined by data and $\lambda_{\min}/\lambda_{\max}=0.05$. The 4 data sets are:
+
+\begin{enumerate}
+    \item \textbf{Breast cancer gene expression data
+(GENE, \url{https://myweb.uiowa.edu/pbreheny/data/bcTCGA.html}):} this data has expression measurements of $p=17,322$ genes from $n=536$ patients. The response is the expression measurement of the gene BRCA1, which has been identified to be related to risk of breast cancer.
+    \item \textbf{Cardiac fibrosis genome-wide association data
+(GWAS, \url{https://arxiv.org/abs/1607.05636}):} this data set has $p=660,496$ single nucleotide
+polymorphisms (SNPs) collected from $n=313$ human hearts. The response is the log of the ratio of cardiomyocytes to fibroblasts in the heart tissue, which is associated with heart failure.
+    \item \textbf{MNIST handwritten image data
+(MNIST, \url{http://yann.lecun.com/exdb/mnist}):} this data set has $60,000$ images in the training set and $10,000$ images in the testing set. Each image is a $28\times 28=784$ pixels image of handwritten digits. We use the training set to form a $n=784\times p=60,000$ feature matrix, treating pixels as samples and images as features. Then an image from the testing set is randomly selected as the response.
+    \item \textbf{Subset of New York Times bag-of-words data
+(NYT, \url{https://archive.ics.uci.edu/ml/datasets/Bag+of+Words}):} the raw data set is a $300,000\times 102,660$ matrix, each row being a document and each column being number of occurrence of a specific word in those documents. We selected $n=5,500$ documents by removing documents with low word counts. Then $55,000$ words are selected as the features and a randomly selected word is the response.
+\end{enumerate}
+
+For the GENE and GWAS data sets, the experiment is replicated 10 times, and the for the MNIST and NYT data sets, because the response is randomly selected, the experiment is replicated 50 times. The Figure \ref{fig:real} summarizes the comparison of time spent on solving the whole path with different screening methods and $\alpha$ values on the 4 data sets. The proposed adaptive method is the fastest especially when $\alpha$ is close to 1. Even if $\alpha$ is small, the adaptive is still the fastest most of the times.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.82\textwidth]{enetreal.pdf}    \caption{Average computing time in seconds with different screening methods and $\alpha$ for elastic net model on 4 data sets.}
+    \label{fig:real}
+\end{figure}
+
+\iffalse
+\begin{table}[ht]
+\centering
+\begin{tabular}{llll}
+\toprule
+Screening method & SSR & Sequential & Adaptive  \\
+\midrule
+$\alpha=0.95$ & 945 (4) & 949 (3) & \textbf{455 (2)} \\
+$\alpha=0.9$ & 946 (3) & 949 (4) & \textbf{465 (2)}  \\
+$\alpha=0.8$ & 939 (2) & 948 (2) & \textbf{471 (2)}  \\
+$\alpha=0.6$ & 936 (2) & 949 (2) & \textbf{485 (2)}  \\
+$\alpha=0.4$ & 938 (1) & 949 (1) & \textbf{500 (1)}  \\
+$\alpha=0.2$ & 953 (4) & 966 (2) & \textbf{544 (3)} \\
+\bottomrule
+\end{tabular}
+\caption{Average computing time in millisecond (standard error) for the GENE data set}
+\label{Tab:gene}
+\end{table}
+\fi
+
+\subsubsection{Ultra High-dimensional Data Sets}
+
+In this section, we consider a ultra high-dimensional real data set that cannot be fit into the memory. This scenario is the greatest challenge to an optimizing algorithm and a good screening method will be most wanted. The data from the Genetic Risk Assessment of Defibrillator Events study (GRADE, \url{https://www.clinicaltrials.gov/ct2/show/NCT02045043}) is a genome-wide genetic data and were collected for 1,080 subjects diagnosed with cardiomyopathy and who had undergone surgery to receive an implantable cardioverter defibrillator in the past 5 years. After imputation using the Haplotype Reference Consortium as a reference genome and filtering for quality control \citep{Das2016}, there were $p=11,830,470$ SNPs which used as features. The size of the file storing the feature matrix is 96G and we conduct the test on a machine with 32G RAM. A variety of clinical data was collected on these individuals. To examine the performance of screening methods for elastic net problem, we focused on the numeric response left ventricular ejection fraction (LVEF). LVEF measures the proportion of blood being pumped out of the left ventricle of the heart with each contraction. Lower values are associated with more severe heart disease. LVEF data was available for $n=973$ subjects and they will be considered as the sample for this analysis. We chose a relatively large $\lambda_{\min} =0.1\lambda_{\max}$ to avoid having much more features selected than the number of observations. This choice will lead to a solution path with $1106$ to $4791$ features selected at the end of the path, depending on the value of $\alpha$. We choose number of $\lambda$ values to be the default value $L=100$ and test a grid of $\alpha$ values $\{1,0.95,0.9,0.8,0.6,0.4,0.2\}$. The time spent to solve the whole path in minutes for different screening methods and $\alpha$'s is shown in Figure~\ref{fig:lvef}. 
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.72\textwidth]{enetlvef.pdf}    \caption{Average computing time in minutes with different screening methods and $\alpha$ for elastic net model on GRADE data set.}
+    \label{fig:lvef}
+\end{figure}
+
+\iffalse
+\begin{table}[ht]
 \centering
 \begin{tabular}{llllll}
 \toprule
 Screening method & SSR\,\,\,\,\,\,\,\,\,    & Sequential   & Adaptive  \\
 \midrule
-$\alpha=1$ & 87.6 & 89.3 & 52.3  \\
-$\alpha=0.95$ & 87.5 & 89.6 & 61.5  \\
-$\alpha=0.9$ & 88.1 & 89.5 & 66.8  \\
-$\alpha=0.8$ & 87.6 & 89.7 & 72.2  \\
-$\alpha=0.6$ & 88.2 & 90.7 & 77.8 \\
-$\alpha=0.4$ & 88.8 & 91.7 & 84.4  \\
-$\alpha=0.2$ & 89.3 & 94.5 & 91.1  \\
+$\alpha=1$ & 87.6 & 89.3 & \textbf{52.3}  \\
+$\alpha=0.95$ & 87.5 & 89.6 & \textbf{61.5}  \\
+$\alpha=0.9$ & 88.1 & 89.5 & \textbf{66.8}  \\
+$\alpha=0.8$ & 87.6 & 89.7 & \textbf{72.2}  \\
+$\alpha=0.6$ & 88.2 & 90.7 & \textbf{77.8} \\
+$\alpha=0.4$ & 88.8 & 91.7 & \textbf{84.4}  \\
+$\alpha=0.2$ & \textbf{89.3} & 94.5 & 91.1  \\
 
 \bottomrule
 \end{tabular}
 \caption{Average computing time in minutes the LVEF analysis with elastic net.\label{Tab:lvef}}
 \end{table}
+\fi
 
 The proposed adaptive screening is the fastest in most cases, especially in the case when $\alpha$ is large. Even if $\alpha$ is extremely small, it does not do much harm to the speed. The proposed sequential screening performs very similar to strong rule screening.
 
@@ -360,7 +395,7 @@ In this paper, we derived a safe screening rule for pathwise elastic net problem
 
 Our result covers the more popular used form of elastic net problem \eqref{eq:enet}. This form is not only more useful in practice, but is also mathematical interesting because it cannot be reduced to lasso problem. In fact our proposed safe screening method is the only existing method we know of that works on penalty function with varying shape as $\lambda$ varies. A constant shape penalty $\lambda p(\boldsymbol\beta)$, such as lasso penalty or group lasso penalty can be rewritten as $p(\lambda\boldsymbol\beta)$, but the elastic net penalty does not share this property. Our result suggests possibility on a larger family of penalty functions.
 
-Besides the standard elastic net problem we have covered, there is also a family of elastic net penalized generalized regression problems that can benefit from screening, but as far as we know, the strong rule screening is the only available screening method for these problems. Since our derivation has already tackled the trickiest part which is the varying shape of elastic net penalty function, similar technique can also help to derive safe rule and thus adaptive safe screening for elastic net penalized generalized regression problems, such as elastic net penalized logistic regression.
+Besides the standard elastic net problem we have covered, there is also a family of elastic net penalized generalized linear regression problems that can benefit from screening, but as far as we know, the strong rule screening is the only available screening method for these problems. Since our derivation has already tackled the trickiest part which is the varying shape of elastic net penalty function, similar technique can also help to derive safe rule and thus adaptive safe screening for elastic net penalized generalized regression problems, such as elastic net penalized logistic regression.
 
 \appendix
 \appendixpage
@@ -376,7 +411,6 @@ Introducing 2 new variables $\boldsymbol r\equiv \boldsymbol y-X\boldsymbol\beta
     \underset{\boldsymbol\beta\in \mathbb{R}^p}{\mathrm{min}}\frac{1}{2}||\boldsymbol r||_2^2+\frac{1}{2n(1-\alpha)\lambda}||\boldsymbol b||_2^2+n\alpha\lambda||\boldsymbol\beta||_1\\s.t.\quad \boldsymbol r=\boldsymbol y-X\boldsymbol\beta,\quad \boldsymbol b=n(1-\alpha)\lambda \boldsymbol\beta.
 \end{gathered}
 \end{equation}
-
 Introducing the dual variables $\boldsymbol u\in\mathbb{R}^{n},\boldsymbol w\in\mathbb{R}^p$, the dual problem becomes:
 
 \begin{gather}
@@ -386,15 +420,12 @@ Introducing the dual variables $\boldsymbol u\in\mathbb{R}^{n},\boldsymbol w\in\
         =&\underset{\boldsymbol u,\boldsymbol w}{\mathrm{max}}\,\underset{\boldsymbol r,\boldsymbol b}{\mathrm{min}}\,\underset{\boldsymbol\beta}{\mathrm{min}}\,n\alpha\lambda||\boldsymbol\beta||_1-\boldsymbol u^TX\boldsymbol\beta+\boldsymbol w^T\boldsymbol\beta+\frac{1}{2}||\boldsymbol r||_2^2+\boldsymbol u^T(\boldsymbol y-\boldsymbol r)+\frac{1}{2n(1-\alpha)\lambda}||\boldsymbol b||_2^2-\frac{\boldsymbol w^T\boldsymbol b}{n(1-\alpha)\lambda}
     \end{aligned}    
 \end{gather}
-
-
 Minimizing with respect to $\boldsymbol\beta$, the partial derivative is:
 
 \begin{equation}
     \label{eq:partialbeta}
     \frac{\partial}{\partial\boldsymbol\beta}(\cdot) =-X^T\boldsymbol u+\boldsymbol w+n\alpha\lambda\frac{\partial||\boldsymbol\beta||_1}{\partial\boldsymbol\beta},
 \end{equation}
-
 so the minimum is obtained iff $||X^T\boldsymbol u-\boldsymbol w||_\infty\leq n\alpha\lambda,$ and the problem becomes:
 
 \begin{gather}
@@ -406,8 +437,7 @@ so the minimum is obtained iff $||X^T\boldsymbol u-\boldsymbol w||_\infty\leq n\
         =&\underset{\boldsymbol u,\boldsymbol w}{\mathrm{max}}\,\frac{1}{2}||\boldsymbol y||_2^2-\frac{1}{2}||\boldsymbol u-\boldsymbol y||_2^2-\frac{1}{2n(1-\alpha)\lambda}||\boldsymbol w||_2^2,
     \end{aligned}
 \end{gather}
-
-where the minimum is obtained iff $\boldsymbol r=\boldsymbol u$ and $\boldsymbol b=\boldsymbol w$. Let $\boldsymbol\theta\equiv\frac{\boldsymbol u}{\lambda}=\frac{\boldsymbol y-X\boldsymbol\beta}{\lambda}$ and $\boldsymbol\gamma\equiv\frac{\boldsymbol w}{\sqrt{n(1-\alpha)\lambda^3}}=\sqrt{\frac{n(1-\alpha)}{\lambda}}\boldsymbol\beta$ The problem becomes the dual problem in \eqref{eq:dualtheta} and the dual solution and primal solution can be connected by \eqref{eq:dualprimal}.
+where the minimum is obtained iff $\boldsymbol r=\boldsymbol u$ and $\boldsymbol b=\boldsymbol w$. Letting $\boldsymbol\theta\equiv\frac{\boldsymbol u}{\lambda}=\frac{\boldsymbol y-X\boldsymbol\beta}{\lambda}$ and $\boldsymbol\gamma\equiv\frac{\boldsymbol w}{\sqrt{n(1-\alpha)\lambda^3}}=\sqrt{\frac{n(1-\alpha)}{\lambda}}\boldsymbol\beta$, the problem becomes the dual problem in \eqref{eq:dualtheta} and the dual solution and primal solution can be connected by \eqref{eq:dualprimal}.
 
 \section{Proof of Theorem \ref{thm:1.1}}
 
@@ -418,7 +448,6 @@ Considering the second order expansion of $g_{\lambda_0}$ at $(\boldsymbol\theta
     \label{eq:1.1.1}
     g_{\lambda_0}\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}=g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}+\left\langle\nabla g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}},\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\rangle-\frac{\lambda_0^2}{2}\left\Vert\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\Vert_2^2,
 \end{equation}
-
 because $\nabla^2g_{\lambda_0}$ is $-\lambda_0^2$ times the identity matrix. 
 
 First, both $(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ and $\left(\boldsymbol\theta_{1|0},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}\right)$ are in the convex set $\mathcal{F}_{\lambda_0}$, because
@@ -426,7 +455,6 @@ First, both $(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ and $\left(\boldsymb
 \begin{equation}
     \left\Vert X^T\boldsymbol\theta_{\lambda_1|\lambda_0}-\sqrt{n(1-\alpha)\lambda_0}\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_\infty= \left\Vert X^T\boldsymbol\theta_{\lambda_1|\lambda_0}-\sqrt{n(1-\alpha)\lambda_1}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_\infty\leq n\alpha.
 \end{equation}
-
 $(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ is the maximizer in the convex set $\mathcal{F}_{\lambda_0}$. That implies that
 
 \begin{equation}
@@ -446,7 +474,6 @@ Second, by the same argument, both $(\boldsymbol\theta_{1|0},\boldsymbol\gamma_{
         &=g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}-\frac{\lambda_0^2(\lambda_0-\lambda_1)}{2\lambda_1}||\boldsymbol\gamma_{0}||_2^2+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{1|0}||_2^2,
     \end{aligned}
 \end{gather}
-
 where the inequality is due to the fact that $(\boldsymbol\theta_{1},\boldsymbol\gamma_{1})$ is the maximizer in $\mathcal{F}_{\lambda_1}$. Combining \eqref{eq:1.1.1}, \eqref{eq:1.1.2} and \eqref{eq:1.1.3} we have:
 
 \begin{gather}
@@ -454,7 +481,6 @@ where the inequality is due to the fact that $(\boldsymbol\theta_{1},\boldsymbol
         &\left\Vert\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\Vert_2^2\leq c\lambda_0||\boldsymbol\gamma_{_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{1|0}||_2^2,
     \end{aligned}
 \end{gather}
-
 and rearranging the terms yields the result in Theorem \ref{thm:1.1}:
 
 \begin{gather}
@@ -510,7 +536,6 @@ If we choose $\boldsymbol w_1=(\frac{\boldsymbol y}{\lambda_1},\boldsymbol0),\bo
 \begin{equation}
     \left\Vert\boldsymbol\mu_1-\boldsymbol\mu_{1|0}-\frac{1}{2}(\boldsymbol v_2-t\boldsymbol v_1)\right\Vert_2^2\leq\frac{1}{4}||\boldsymbol v_2-t\boldsymbol v_1||_2^2,
 \end{equation}
-
 which means $\boldsymbol\mu_1=(\boldsymbol\theta_{\lambda_1},\boldsymbol\gamma_{\lambda_1})$ is bounded in a ball. Plugging in the definition in \eqref{eq:1.2.1} will result in the form stated in the theorem.
 
 \section{Proof of Theorem \ref{thm:2.1}}
@@ -857,7 +882,6 @@ We will only show the results and omit the proofs, as the proofs are very simila
         \end{aligned}
     \end{gather}
 \end{theorem}
-
 The theorem  directly implies that $\boldsymbol\theta_{1|0}$ is in the ball with center $\boldsymbol c_1^\theta$ and radius $r_1$.
 
 Note if we restate $r_1$ and $\rho$ in terms of the primal solution, it becomes:
@@ -882,7 +906,6 @@ Last, both $\boldsymbol\mu_{1|0}$ and $\boldsymbol\mu_1$ are the optimizer of co
         \end{aligned}
     \end{gather}
 \end{theorem}
-
 Bound for $\gamma_{\lambda_1}$ is not considered since it is not necessary for the rest of derivation. For any $\boldsymbol\mu'$, $\boldsymbol\mu_1\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')$ means $\boldsymbol\theta$ is in a ball with center $\boldsymbol\theta'$ and radius $\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2$ and $\xi \boldsymbol x_j^T\boldsymbol\theta$ is linear in $\boldsymbol\theta$, so the maximum in \eqref{eq:ttilde} can be obtained easily:
 
 \begin{equation}
