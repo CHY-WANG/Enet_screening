@@ -16,9 +16,9 @@ where the tuning parameter $\lambda>0$ controls the overall size of penalty and 
 
 The elastic net is a regularization method very similar to lasso problem \citep{tibshirani1996} with an extra $L_2$ penalty. The elastic net shares all the nice properties of lasso: automatic sparse solution and continuous shrinkage. This small difference of the elastic net, furthermore, brings some great advantages over the lasso method. First, the objective function in elastic net problem \eqref{eq:enet} is strictly convex so there will be a unique solution, while lasso problem solution may not be unique especially when the penalty tuning parameter is small. Second, in a case with a group of important but highly correlated features, elastic net tends to select all the them, but the lasso tends to select only one of them.
 
-The elastic net and lasso method have gain great success in the high dimension data analysis, where both the sample size $n$ and number of features $p$ are extremely large. Efficient algorithms to solve them are important because the dimensionality introduces great time and memory cost. One of the most promising techniques that can be applied on top of any other algorithms is \quotes{screening}, which takes advantages of the sparsity of the solution: if we know some of the features that have 0 coefficients in the solution before solving the problem, we can \quotes{discard} those features from the problem. Any solving algorithm can be applied to the reduced problem without those features much faster, but the solution will be exactly the same as the solution to the origin problem. The key is discarding more features and not make wrong discard. Moreover, a typical practice to solve penalized regression problems including elastic net and lasso is to solve the problem sequentially along a path of penalty tuning parameter values $\lambda_0,\lambda_1,...,\lambda_L$ and select the best value. In this case, when solving the problem at a $\lambda_l$, solutions at previous values $\lambda_0,...,\lambda_{l-1}$ are already known and can be utilized to conduct a more powerful screening that discards more features. There have been many studies on screening method for lasso problem \citep{ghaoui2010safe,Tibshirani2012,wang2013lasso,Zeng2021,wang2021adaptive} and they have been proven to bring significant speedup on popular lasso algorithms.
+The elastic net and lasso method have gain great success in the high dimension data analysis, where both the sample size $n$ and number of features $p$ are extremely large. Efficient algorithms to solve them are important because the dimensionality introduces great time and memory cost. One of the most promising techniques that can be applied on top of any other algorithms is \quotes{screening}, which takes advantages of the sparsity of the solution: if we know some of the features that have 0 coefficients in the solution before solving the problem, we can \quotes{discard} those features from the problem. Any solving algorithm can be applied to the reduced problem without those features much faster, but the solution will be exactly the same as the solution to the origin problem. The key is discarding more features and not make wrong discard. Moreover, a typical practice to solve penalized regression problems including elastic net and lasso is to solve the problem sequentially along a path of penalty tuning parameter values $\lambda_0,\lambda_1,...,\lambda_L$ and select the best value. In this case, when solving the problem at a $\lambda_l$, solutions at previous values $\lambda_0,...,\lambda_{l-1}$ are already known and can be utilized to conduct a more powerful screening that discards more features. There have been many studies on screening method for lasso problem \citep{ghaoui2010safe,Tibshirani2012,wang2013lasso,fercoq2015,Zeng2021,wang2021adaptive} and they have been proven to bring significant speedup on popular lasso algorithms.
 
-Studies on screening methods for elastic net problem are still very limited. First, if we consider the naive form \eqref{eq:enet0} and consider $\lambda_2$ as fixed, then the $L_2$ penalty can be considered as a part of the first loss term by considering a augmented definition of $X$ and $\boldsymbol y$. Then the problem is equivalent to a trivial lasso problem and any screening methods for lasso problem can be used. However, this form is not favorable in practice for the reasons we have discussed about and we only want to focus on the more popular form \eqref{eq:enet}. Second, the screening rule BEDPP for elastic net \citep{Zeng2021} has been proposed, but it cannot utilize previous solutions and will lose power along the path. Third, there are some unsafe screening rules, such as strong rule \citep{Tibshirani2012}, that can be combined with checks afterwards to make sure no feature is mistakenly discarded and produce safe screening. Strong rule can provide a significant speedup in a large class of problems including lasso and elastic net problems, and has been widely used, for example, in \textbf{glmnet} R package. However, recently, the adaptive screening framework \citep{wang2021adaptive} which adaptively utilizes and reuses previous solutions as reference for any existing safe screening rules, can discard a great proportion of features while having low computation cost and has proven to outperform other screening methods, including strong rule screening, by a large margin in time cost for solving the lasso problem. As a result, a safe screening rule for the elastic net that can utilize previous solutions is desired and then an adaptive screening method can utilize this rule to form an efficient algorithm to solve elastic net problem as well.
+Studies on screening methods for elastic net problem are still very limited. First, if we consider the naive form \eqref{eq:enet0} and consider $\lambda_2$ as fixed, then the $L_2$ penalty can be considered as a part of the first loss term by considering a augmented definition of $X$ and $\boldsymbol y$. Then the problem is equivalent to a trivial lasso problem and any screening methods for lasso problem can be applied to form a screening method for the elastic net problem, for example \citep{xu2019}. However, this form is not favorable in practice for the reasons we have discussed about and we only want to focus on the more popular form \eqref{eq:enet}. Second, the screening rule BEDPP for elastic net \citep{Zeng2021} has been proposed, but it cannot utilize previous solutions and will lose power along the path. Third, there are some unsafe screening rules, such as strong rule \citep{Tibshirani2012}, that can be combined with checks afterwards to make sure no feature is mistakenly discarded and produce safe screening. Strong rule can provide a significant speedup in a large class of problems including lasso and elastic net problems, and has been widely used, for example, in \textbf{glmnet} R package. However, recently, the adaptive screening framework \citep{wang2021adaptive} which adaptively utilizes and reuses previous solutions as reference for any existing safe screening rules, can discard a great proportion of features while having low computation cost and has proven to outperform other screening methods, including strong rule screening, by a large margin in time cost for solving the lasso problem. As a result, a safe screening rule for the elastic net that can utilize previous solutions is desired and then an adaptive screening method can utilize this rule to form an efficient algorithm to solve elastic net problem as well.
 
 In this paper, we propose an adaptive safe screening method for elastic net problem that efficiently utilizes previous solution as reference for enhanced power. In section 2 we will derive the safe screening rule and build it into the adaptive screening framework to form an adaptive screening method. In section 3, we will run experiments on both synthetic and real data sets to compare our method with the other state-of-the-art screening method strong rule screening. In section 4, we will discuss the results and some remarks.
 
@@ -99,19 +99,25 @@ Thus, in rest of the derivation, we will focus on the the case when $\lambda_0<\
 
 \subsection{Intermediate and Target Dual Solutions Regions}
 
-In this section, we will derive the two regions $\mathcal{A}^1$ and $\mathcal{A}^2$.
+In this section, we will derive the two regions $\mathcal{A}^1$ and $\mathcal{A}^2$. We will define two quantities for simplification purpose: 
+\begin{equation}
+    c\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1},\quad d\equiv \frac{\sqrt{\frac{\lambda_1}{\lambda_0}}+\sqrt{\frac{\lambda_0}{\lambda_1}}}{2}.
+\end{equation}
+
+Considering that $\mathcal{F}_{\lambda_1}$ and $\mathcal{F}_{\lambda_0}$ are the reshaped sets of each other by a linear mapping, we can derive the following theorem:
 
 \begin{theorem}
     \label{thm:1.1}
     For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $\boldsymbol\mu_0$ is known, $\boldsymbol\mu_{1|0}$ is contained in the set $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ that is a ball with center and radius
     \begin{gather}
         \begin{aligned}
-            \boldsymbol c_1&=\binom{\boldsymbol\theta_0}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_0}\\
-            r_1&=\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_0||_2,
+            \boldsymbol c_1&=\binom{\boldsymbol\theta_0}{d\boldsymbol\gamma_0}\\
+            r_1&=\sqrt{d^2-1}||\boldsymbol\gamma_0||_2
         \end{aligned}
     \end{gather}
 \end{theorem}
-where $c\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1}$. Looking at the form of the dual function \eqref{eq:dualtheta}, $\boldsymbol\mu_1=(\boldsymbol\theta_1,\boldsymbol\gamma_1)$ is the projection of $(\frac{\boldsymbol y}{\lambda_1},0)$ onto $\mathcal{F}_{\lambda_1}$, while in the intermediate problem \eqref{eq:dualmi}, $\boldsymbol\mu_{1|0}=(\boldsymbol\theta_{1|0},\boldsymbol\gamma_{1|0})$ is the projection of a different point $(\frac{\boldsymbol y}{\lambda_0},0)$ onto the same set $\mathcal{F}_{\lambda_1}$. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a region that contains the target $\boldsymbol\mu_1$ can be derived:
+
+Looking at the form of the dual function \eqref{eq:dualtheta}, $\boldsymbol\mu_1=(\boldsymbol\theta_1,\boldsymbol\gamma_1)$ is the projection of $(\frac{\boldsymbol y}{\lambda_1},0)$ onto $\mathcal{F}_{\lambda_1}$, while in the intermediate problem \eqref{eq:dualmi}, $\boldsymbol\mu_{1|0}=(\boldsymbol\theta_{1|0},\boldsymbol\gamma_{1|0})$ is the projection of a different point $(\frac{\boldsymbol y}{\lambda_0},0)$ onto the same set $\mathcal{F}_{\lambda_1}$. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a region that contains the target $\boldsymbol\mu_1$ can be derived:
 
 \begin{theorem}
     \label{thm:1.2}
@@ -153,12 +159,12 @@ where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\
 \begin{theorem}
     \label{thm:2.1}
     For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $\boldsymbol\mu_0$ is known, if we define
-    \begin{gather}
-        \begin{aligned}
-            T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)\equiv\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\xi \boldsymbol x_j^T \boldsymbol \theta_{0}+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{0}||_2\\+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}}\right\Vert_2\\
+    \begin{align}
+        \begin{gathered}
+            T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)\equiv\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\xi \boldsymbol x_j^T \boldsymbol \theta_{0}\\+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{d^2-1}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)d\boldsymbol\gamma_{0}}\right\Vert_2\\
             %&=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol c_1^\gamma||_2+\sqrt{1+c(\lambda_0-\lambda_1)}r_1\right).
-        \end{aligned}
-    \end{gather}
+        \end{gathered}
+    \end{align}
     then $T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)\geq\underset{\boldsymbol\mu'\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)}{\mathrm{max}}\Tilde{T}^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu')$ for all $t\geq0$.
 \end{theorem}
 
@@ -166,24 +172,27 @@ If we define $\boldsymbol r_0\equiv \boldsymbol y-X\boldsymbol\beta_{0}$ and $\h
 
 \begin{gather}
     \begin{aligned}
-        T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)=  \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{0}+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{0}||_2\\
-        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{0}||_2^2}.
+        &T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)=  \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{0}\\
+        &+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{\frac{n(1-\alpha) (d^2-1)}{\lambda_0}}||\boldsymbol\beta_{0}||_2\\
+        &+\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_0d^2||\boldsymbol\beta_{0}||_2^2}.
     \end{aligned}
 \end{gather}
+
 $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ being the maximum of it over $\xi=-1,1$ is
 
 \begin{gather}
     \label{eq:t}
     \begin{aligned}
-        T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)= \left| \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0} \boldsymbol x_j^T \boldsymbol r_{0}\right|+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{n(1-\alpha) c^2\lambda_1}||\boldsymbol\beta_{0}||_2\\
-        +\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_1||\boldsymbol\beta_{0}||_2^2}.
+        &T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)= \left| \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0} \boldsymbol x_j^T \boldsymbol r_{0}\right|\\
+        &+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{\frac{n(1-\alpha) (d^2-1)}{\lambda_0}}||\boldsymbol\beta_{0}||_2\\
+        &+\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_0d^2||\boldsymbol\beta_{0}||_2^2}.
     \end{aligned}
 \end{gather}
 
 Last, we need to choose a $t\geq 0$. An optimal choice will be the $t$ that minimizes $T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$. This choice results in a complicated form of $t$ and different values of $t$ have to be chosen for different $\boldsymbol x_j$, which may result in additional computation cost that outweighs the gain from screening. Instead, we choose the $t$ that minimizes a simpler objective
 
 \begin{equation}
-    \frac{t}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}}\right\Vert_2.
+    \frac{t}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{d^2-1}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)d\boldsymbol\gamma_{0}}\right\Vert_2.
 \end{equation}
 
 The solution will be $t=0$ if
@@ -197,9 +206,9 @@ Else $t=$
 \begin{gather}
     \label{eq:tn0}
     \begin{aligned}
-        \left(1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right.\\
+        0\vee\left(1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right.\\
         \left.-c^2\lambda_0^2\sqrt{\frac{||\boldsymbol y||_2^2\left(||\hat{\boldsymbol y}_{0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{0}||_2^2\right)-\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+\frac{\lambda_0(2\lambda_1-\lambda_0)}{\lambda_1}n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}}
-        \frac{||\boldsymbol\beta_{0}||_2\sqrt{\lambda_1n(1-\alpha)}}{||\hat{\boldsymbol y}_{0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right)\vee0
+        \frac{||\boldsymbol\beta_{0}||_2\sqrt{\lambda_1n(1-\alpha)}}{||\hat{\boldsymbol y}_{0}||_2^2+\lambda_1n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right)
     \end{aligned}
 \end{gather}
 
@@ -391,9 +400,9 @@ The proposed adaptive screening is the fastest in most cases, especially in the 
 
 \section{Discussion}
 
-In this paper, we derived a safe screening rule for pathwise elastic net problem that utilizes previous solution as a reference for enhanced screening power by considering an intermediate problem that connects the reference and the target. We show that it can be built into a adaptive screening method that performs 3-4 times faster than the other state-of-the-art method SSR in most cases. The adaptive method is implemented in the public available \textbf{biglasso} R package.
+In this paper, we derive a safe screening rule for pathwise elastic net problem that utilizes previous solution as a reference for enhanced screening power by considering an intermediate problem that connects the reference and the target. We show that it can be built into a adaptive screening method that performs 3-4 times faster than the other state-of-the-art method SSR in most cases. The adaptive method is implemented in the public available \textbf{biglasso} R package.
 
-Our result covers the more popular used form of elastic net problem \eqref{eq:enet}. This form is not only more useful in practice, but is also mathematical interesting because it cannot be reduced to lasso problem. In fact our proposed safe screening method is the only existing method we know of that works on penalty function with varying shape as $\lambda$ varies. A constant shape penalty $\lambda p(\boldsymbol\beta)$, such as lasso penalty or group lasso penalty can be rewritten as $p(\lambda\boldsymbol\beta)$, but the elastic net penalty does not share this property. Our result suggests possibility on a larger family of penalty functions.
+Our result covers the more popular used form of elastic net problem \eqref{eq:enet}. This form is not only more useful in practice, but is also mathematical more interesting because it cannot be reduced to lasso problem. In fact our proposed safe screening method is the only existing method we know of that works on penalty function with varying shape as $\lambda$ varies. A constant shape penalty $\lambda p(\boldsymbol\beta)$, such as lasso penalty or group lasso penalty can be rewritten as $p(\lambda\boldsymbol\beta)$, but the elastic net penalty does not share this property. Our result suggests possibility on a larger family of penalty functions.
 
 Besides the standard elastic net problem we have covered, there is also a family of elastic net penalized generalized linear regression problems that can benefit from screening, but as far as we know, the strong rule screening is the only available screening method for these problems. Since our derivation has already tackled the trickiest part which is the varying shape of elastic net penalty function, similar technique can also help to derive safe rule and thus adaptive safe screening for elastic net penalized generalized regression problems, such as elastic net penalized logistic regression.
 
@@ -450,48 +459,65 @@ Considering the second order expansion of $g_{\lambda_0}$ at $(\boldsymbol\theta
 \end{equation}
 because $\nabla^2g_{\lambda_0}$ is $-\lambda_0^2$ times the identity matrix. 
 
-First, both $(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ and $\left(\boldsymbol\theta_{1|0},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}\right)$ are in the convex set $\mathcal{F}_{\lambda_0}$, because
+First, both $(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ and $\left(\boldsymbol\theta_{1|0},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}\right)$ are in the convex set $\mathcal{F}_{\lambda_0}$. The latter is true because
 
 \begin{equation}
     \left\Vert X^T\boldsymbol\theta_{\lambda_1|\lambda_0}-\sqrt{n(1-\alpha)\lambda_0}\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_\infty= \left\Vert X^T\boldsymbol\theta_{\lambda_1|\lambda_0}-\sqrt{n(1-\alpha)\lambda_1}\boldsymbol\gamma_{\lambda_1|\lambda_0}\right\Vert_\infty\leq n\alpha.
 \end{equation}
-$(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ is the maximizer in the convex set $\mathcal{F}_{\lambda_0}$. That implies that
+$(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ is the maximizer in the convex set $\mathcal{F}_{\lambda_0}$ so it must satisfy the first order condition:
 
 \begin{equation}
     \label{eq:1.1.2}
-    \left\langle\nabla g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}},\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\rangle\leq 0.
+    \left\langle\nabla g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}},\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\rangle\leq 0,
+\end{equation}
+because if not, $(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$ can be improved by moving by a small amount towards the direction of\newline $\left(\boldsymbol\theta_{1|0},\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}\right)-(\boldsymbol\theta_{0},\boldsymbol\gamma_{0})$. Combining it with \eqref{eq:1.1.1}:
+
+\begin{equation}
+    \label{eq:1.1.3}
+    g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\geq g_{\lambda_0}\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}+\frac{\lambda_0^2}{2}\left\Vert\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\Vert_2^2.
 \end{equation}
 
-Second, by the same argument, both $(\boldsymbol\theta_{1|0},\boldsymbol\gamma_{1|0})$ and $\left(\boldsymbol\theta_{0},\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}\right)$ are in the convex set $\mathcal{F}_{\lambda_1}$. Then,
+Second, by the same argument, both $(\boldsymbol\theta_{1|0},\boldsymbol\gamma_{1|0})$ and $\left(\boldsymbol\theta_{0},\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}\right)$ are in the convex set $\mathcal{F}_{\lambda_1}$, and we have the same result as \eqref{eq:1.1.3}:
+
+\begin{equation}
+    \label{eq:1.1.4}
+    g_{\lambda_0}\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}\geq g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}}+\frac{\lambda_0^2}{2}\left\Vert\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}}-\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}\right\Vert_2^2.
+\end{equation}
+
+Then,
 
 \begin{gather}
-    \label{eq:1.1.3}
+    \label{eq:1.1.5}
     \begin{aligned}
         g_{\lambda_0}\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}&=\frac{1}{2}||\boldsymbol y||_2^2-\frac{\lambda_0^2}{2}\left\Vert\frac{\boldsymbol y}{\lambda_0}-\boldsymbol\theta_{1|0}\right\Vert_2^2-\frac{\lambda_1\lambda_0}{2}||\boldsymbol\gamma_{1|0}||_2^2\\
         &= \frac{1}{2}||\boldsymbol y||_2^2-\frac{\lambda_0^2}{2}\left\Vert\frac{\boldsymbol y}{\lambda_0}-\boldsymbol\theta_{1|0}\right\Vert_2^2-\frac{\lambda_0^2}{2}||\boldsymbol\gamma_{1|0}||_2^2+\left(\frac{\lambda_0^2}{2}-\frac{\lambda_1\lambda_0}{2}\right)||\boldsymbol\gamma_{1|0}||_2^2\\
         &=g_{\lambda_0}\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{1|0}||_2^2\\
-        &\geq g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}}+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{1|0}||_2^2\\
-        &=g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}-\frac{\lambda_0^2(\lambda_0-\lambda_1)}{2\lambda_1}||\boldsymbol\gamma_{0}||_2^2+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{1|0}||_2^2,
+        &\geq g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}}+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{1|0}||_2^2+\frac{\lambda_0^2}{2}\left\Vert\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}}-\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}\right\Vert_2^2\\
+        &=g_{\lambda_0}\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}-\frac{\lambda_0^2(\lambda_0-\lambda_1)}{2\lambda_1}||\boldsymbol\gamma_{0}||_2^2+\frac{\lambda_0(\lambda_0-\lambda_1)}{2}||\boldsymbol\gamma_{1|0}||_2^2+\frac{\lambda_0^2}{2}\left\Vert\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}}-\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}\right\Vert_2^2,
     \end{aligned}
 \end{gather}
-where the inequality is due to the fact that $(\boldsymbol\theta_{1},\boldsymbol\gamma_{1})$ is the maximizer in $\mathcal{F}_{\lambda_1}$. Combining \eqref{eq:1.1.1}, \eqref{eq:1.1.2} and \eqref{eq:1.1.3} we have:
+where the inequality is due to \eqref{eq:1.1.4}. Combining \eqref{eq:1.1.3} and \eqref{eq:1.1.5} we have:
 
 \begin{gather}
     \begin{aligned}
-        &\left\Vert\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\Vert_2^2\leq c\lambda_0||\boldsymbol\gamma_{_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{1|0}||_2^2,
+        &\left\Vert\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}}-\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}\right\Vert_2^2+\left\Vert\binom{\boldsymbol\theta_{1|0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\boldsymbol\gamma_{0}}\right\Vert_2^2\leq c\lambda_0||\boldsymbol\gamma_{_0}||_2^2-c\lambda_1||\boldsymbol\gamma_{1|0}||_2^2,
     \end{aligned}
 \end{gather}
-and rearranging the terms yields the result in Theorem \ref{thm:1.1}:
+and rearranging the terms
 
 \begin{gather}
     \begin{aligned}
-        ||\boldsymbol\theta_{1|0}-\boldsymbol\theta_{0}||_2^2&\leq c\lambda_0||\boldsymbol\gamma_{0}||_2^2-c\lambda_1||\boldsymbol\gamma_{1|0}||_2^2-\left\Vert\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}-\boldsymbol\gamma_{0}\right\Vert_2^2\\
-        &=c\lambda_0||\boldsymbol\gamma_{0}||_2^2-c\lambda_1||\boldsymbol\gamma_{1|0}||_2^2-\frac{\lambda_1}{\lambda_0}||\boldsymbol\gamma_{1|0}||_2^2+2\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}^T\boldsymbol\gamma_{1|0}-||\boldsymbol\gamma_{0}||_2^2\\
-        &=-||\boldsymbol\gamma_{1|0}||_2^2+2\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}^T\gamma_{1|0}+(c\lambda_0-1)||\boldsymbol\gamma_{0}||_2^2\\
-        &=-\left\Vert\boldsymbol\gamma_{1|0}-\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}\right\Vert_2^2+c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{0}||_2^2\\
-        \implies \left\Vert\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}}\right\Vert_2^2&\leq c(\lambda_0-\lambda_1)||\boldsymbol\gamma_{0}||_2^2.
+        &2||\boldsymbol\theta_{1|0}-\boldsymbol\theta_{0}||_2^2\\\leq& c\lambda_0||\boldsymbol\gamma_{0}||_2^2-c\lambda_1||\boldsymbol\gamma_{1|0}||_2^2-\left\Vert\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{1|0}-\boldsymbol\gamma_{0}\right\Vert_2^2-\left\Vert\sqrt{\frac{\lambda_0}{\lambda_1}}\boldsymbol\gamma_{0}-\boldsymbol\gamma_{1|0}\right\Vert_2^2\\
+        =&c\lambda_0||\boldsymbol\gamma_{0}||_2^2-c\lambda_1||\boldsymbol\gamma_{1|0}||_2^2-\left(1+\frac{\lambda_1}{\lambda_0}\right)||\boldsymbol\gamma_{1|0}||_2^2+2\left(\sqrt{\frac{\lambda_1}{\lambda_0}}+\sqrt{\frac{\lambda_0}{\lambda_1}}\right)\boldsymbol\gamma_{0}^T\boldsymbol\gamma_{1|0}-\left(1+\frac{\lambda_0}{\lambda_1}\right)||\boldsymbol\gamma_{0}||_2^2\\
+        =&-2||\boldsymbol\gamma_{1|0}||_2^2+4d\boldsymbol\gamma_{0}^T\gamma_{1|0}-2||\boldsymbol\gamma_{0}||_2^2\\
+        =&-2\left\Vert\boldsymbol\gamma_{1|0}-d\boldsymbol\gamma_{0}\right\Vert_2^2+2(d^2-1)||\boldsymbol\gamma_{0}||_2^2\\
     \end{aligned}
 \end{gather}
+where $d\equiv \frac{\sqrt{\frac{\lambda_1}{\lambda_0}}+\sqrt{\frac{\lambda_0}{\lambda_1}}}{2}$. It leads to the same result as in the theorem
+
+\begin{equation}
+     \left\Vert\binom{\boldsymbol\theta_{1|0}}{\boldsymbol\gamma_{1|0}}-\binom{\boldsymbol\theta_{0}}{d\boldsymbol\gamma_{0}}\right\Vert_2^2\leq (d^2-1)||\boldsymbol\gamma_{0}||_2^2.
+\end{equation}
 
 \section{Proof of Theorem \ref{thm:1.2}}
 
@@ -511,7 +537,7 @@ First, we have the idea of projections of rays, stated as the following
     \citep{Bauschke2011}
     Let $\mathcal{C}$ be a nonempty closed convex subset of a Hilbert space $\mathcal{H}$. For any $\boldsymbol w\in\mathcal{H}$ , let $P_{\mathcal{C}}(\boldsymbol w)$ be the projection of $\boldsymbol w$ onto $\mathcal{C}$. Then for any $\boldsymbol w\in\mathcal{H}$ and $t\geq 0$,
     \begin{equation}
-        P_{\mathcal{C}}\left(P_{\mathcal{C}}(w)+t\left(\boldsymbol w-P_{\mathcal{C}}(\boldsymbol w)\right)\right)=P_{\mathcal{C}}(\boldsymbol w).
+        P_{\mathcal{C}}\left(P_{\mathcal{C}}(\boldsymbol w)+t\left(\boldsymbol w-P_{\mathcal{C}}(\boldsymbol w)\right)\right)=P_{\mathcal{C}}(\boldsymbol w).
     \end{equation}
 \end{lemma}
 
@@ -528,7 +554,7 @@ If we choose $\boldsymbol w=(\frac{\boldsymbol y}{\lambda_0},\boldsymbol0)$, it 
 If we rearrange the terms into squares, it says:
 
 \begin{equation}
-    ||P_{\mathcal{C}}(\boldsymbol w_1)-P_{\mathcal{C}}(\boldsymbol w_2)-\frac{1}{2}(\boldsymbol w_1-\boldsymbol w_2)||_2^2\leq\frac{1}{4}||\boldsymbol w_1-\boldsymbol w_2||.
+    ||P_{\mathcal{C}}(\boldsymbol w_1)-P_{\mathcal{C}}(\boldsymbol w_2)-\frac{1}{2}(\boldsymbol w_1-\boldsymbol w_2)||_2^2\leq\frac{1}{4}||\boldsymbol w_1-\boldsymbol w_2||_2^2.
 \end{equation}
 
 If we choose $\boldsymbol w_1=(\frac{\boldsymbol y}{\lambda_1},\boldsymbol0),\boldsymbol w_2=\boldsymbol\mu_{1|0}+t\boldsymbol v_1$, which means $P_{\mathcal{C}}(\boldsymbol w_1)=\boldsymbol\mu_1,P_{\mathcal{C}}(\boldsymbol w_2)=\boldsymbol\mu_{1|0},\boldsymbol w_1-\boldsymbol w_2=\boldsymbol v_2-t\boldsymbol v_1$, we have:
@@ -555,7 +581,7 @@ The first maximization problem is maximizing a linear function in a ball with ce
 \begin{gather}
     \begin{aligned}
         \frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\left(\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2r_1\right)\\
-        =\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\left(\xi \boldsymbol x_j^T \boldsymbol \theta_{0}+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{0}||_2\right).
+        =\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\left(\xi \boldsymbol x_j^T \boldsymbol \theta_{0}+||\boldsymbol x_j||_2\sqrt{d^2-1}||\boldsymbol\gamma_{0}||_2\right).
     \end{aligned}
 \end{gather}
 
@@ -564,7 +590,7 @@ The second maximization problem is maximizing the distance to $\left((\frac{1}{\
 \begin{gather}
     \begin{aligned}
         \frac{||\boldsymbol x_j||_2|1-t|}{2}\left(\left\Vert\boldsymbol c_1-\binom{(\frac{1}{\lambda_0}+\frac{c}{1-t})\boldsymbol y}{\boldsymbol 0}\right\Vert_2+r_1\right)\\
-        =\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)\sqrt{\frac{\lambda_1}{\lambda_0}}\boldsymbol\gamma_{0}}\right\Vert_2+\frac{||\boldsymbol x_j||_2|1-t|}{2}\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_0||_2.
+        =\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)d\boldsymbol\gamma_{0}}\right\Vert_2+\frac{||\boldsymbol x_j||_2|1-t|}{2}\sqrt{d^2-1}||\boldsymbol\gamma_0||_2.
     \end{aligned}
 \end{gather}
 
@@ -902,15 +928,15 @@ Last, both $\boldsymbol\mu_{1|0}$ and $\boldsymbol\mu_1$ are the optimizer of co
     \begin{gather}
         \begin{aligned}
             c_2&=\boldsymbol\theta_{1|0}\\
-            r_2&=\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma_{1|0}||_2.
+            r_2&=\sqrt{d^2-1}||\boldsymbol\gamma_{1|0}||_2.
         \end{aligned}
     \end{gather}
 \end{theorem}
-Bound for $\gamma_{\lambda_1}$ is not considered since it is not necessary for the rest of derivation. For any $\boldsymbol\mu'$, $\boldsymbol\mu_1\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')$ means $\boldsymbol\theta$ is in a ball with center $\boldsymbol\theta'$ and radius $\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2$ and $\xi \boldsymbol x_j^T\boldsymbol\theta$ is linear in $\boldsymbol\theta$, so the maximum in \eqref{eq:ttilde} can be obtained easily:
+Bound for $\gamma_{\lambda_1}$ is not considered since it is not necessary for the rest of derivation. For any $\boldsymbol\mu'$, $\boldsymbol\mu_1\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')$ means $\boldsymbol\theta$ is in a ball with center $\boldsymbol\theta'$ and radius $\sqrt{d^2-1}||\boldsymbol\gamma'||_2$ and $\xi \boldsymbol x_j^T\boldsymbol\theta$ is linear in $\boldsymbol\theta$, so the maximum in \eqref{eq:ttilde} can be obtained easily:
 
 \begin{equation}
     \label{eq:ttildexi.alt}
-    \Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')=\xi \boldsymbol x_j^T\boldsymbol\theta'+||\boldsymbol x_j||_2\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol\gamma'||_2.
+    \Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')=\xi \boldsymbol x_j^T\boldsymbol\theta'+||\boldsymbol x_j||_2\sqrt{d^2-1}||\boldsymbol\gamma'||_2.
 \end{equation}
 
 Next, we need to maximize $\Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')$ subject to $\boldsymbol\mu'\in\mathcal{A}^1$.
@@ -921,9 +947,9 @@ Next, we need to maximize $\Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')$
     \begin{gather}
         \begin{aligned}
             T^\xi_j&\equiv\underset{\boldsymbol\mu'\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)}{\mathrm{max}}\Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')\\
-            &=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol c_1^\gamma||_2+\sqrt{1+c(\lambda_0-\lambda_1)}r_1\right).
+            &=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{d^2-1}||\boldsymbol c_1^\gamma||_2+dr_1\right).
         \end{aligned}
     \end{gather}
 \end{theorem}
 
-The form of the upper bound is similar to that of the EDPP for lasso problem, except when $\alpha\xrightarrow[]{}1$, the last term $\sqrt{1+c(\lambda_0-\lambda_1)}r_1$ will be larger than the corresponding term of the EDPP for lasso by a factor of $\sqrt{1+c(\lambda_0-\lambda_1)}$ that is strictly greater than 1. This suggests this alternative construction of intermediate problem introduces extra unnecessary looseness in the upper bound.
+The form of the upper bound is similar to that of the EDPP for lasso problem, except when $\alpha\xrightarrow[]{}1$, the last term $dr_1$ will be larger than the corresponding term of the EDPP for lasso by a factor of $\frac{d}{\sqrt{d^2-1}}$ that is strictly greater than 1. This suggests this alternative construction of intermediate problem introduces extra unnecessary looseness in the upper bound.
