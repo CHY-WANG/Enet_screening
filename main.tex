@@ -24,6 +24,7 @@ In this paper, we propose a powerful, adaptive safe screening method for the ela
 
 \section{Screening Method}
 \subsection{Problem Formulation}
+\label{sec:formulation}
 
 A dual formulation of problem \eqref{eq:enet} can be given by (see Appendix \ref{sec:dual} for details):
 
@@ -56,7 +57,7 @@ for any $j$. Combining \eqref{eq:dualprimal} and \eqref{eq:kkt} we have a trivia
         \boldsymbol\beta_\lambda=0\iff \lambda \geq \lambda_{\max}\equiv \max_j \frac{|\boldsymbol x_j^T\boldsymbol y|}{n\alpha}
     \end{aligned}
 \end{gather}
-Thus, when solving the problems on a grid of $L+1$ decreasing $\lambda$ values: $\lambda_0>\lambda_1>...>\lambda_L>0$, it makes more sense to choose $\lambda_0=\lambda_{\max}$ to take advantage of the known solution. If an algorithm solves the problems sequentially in decreasing order of $\lambda$, then the solution at $\lambda_{\ell'}$ will be known before solving the problem at $\lambda_\ell$ if $\ell'<\ell$. In the rest of this section, we will derive a screening method for this pathwise approach. Also, without loss of generality, we will derive the screening method for the problem at $\lambda_1$ assuming the solution at $\lambda_0$ is known and can be used as a reference for screening. We refer to this pair as the \quotes{target} ($\lambda_1)$ and the \quotes{reference} ($\lambda_0$). The same method can be applied to any pair of $\lambda_{\ell}$ and $\lambda_{\ell'}$. For simplicity, we will use $\boldsymbol\beta_\ell,\boldsymbol\mu_\ell,\boldsymbol\theta_\ell,\boldsymbol\gamma_\ell$ to denote the solution at any $\lambda_\ell$.
+Thus, when solving the problems on a grid of $L+1$ decreasing $\lambda$ values: $\lambda_0>\lambda_1>...>\lambda_L>0$, it makes more sense to choose $\lambda_0=\lambda_{\max}$ to take advantage of the known solution. If an algorithm solves the problems sequentially in decreasing order of $\lambda$, then the solution at $\lambda_{l'}$ will be known before solving the problem at $\lambda_l$ if $l'<l$. In the rest of this section, we will derive a screening method for this pathwise approach. Also, without loss of generality, we will derive the screening method for the problem at $\lambda_1$ assuming the solution at $\lambda_0$ is known and can be used as a reference for screening. We refer to this pair as the \quotes{target} ($\lambda_1)$ and the \quotes{reference} ($\lambda_0$). The same method can be applied to any pair of $\lambda_{l}$ and $\lambda_{l'}$. For simplicity, we will use $\boldsymbol\beta_l,\boldsymbol\mu_l,\boldsymbol\theta_l,\boldsymbol\gamma_l$ to denote the solution at any $\lambda_l$.
 
 Note that from the KKT conditions \eqref{eq:kkt}, if
 
@@ -64,7 +65,7 @@ Note that from the KKT conditions \eqref{eq:kkt}, if
     \label{eq:disc_cond}
     |\boldsymbol x_j^T\boldsymbol\theta_{1}|<n\alpha,
 \end{equation}
-for any $\lambda_1$, we can safely conclude $\boldsymbol\beta_{1,j}=0$ and the corresponding $\boldsymbol x_j$ can be discarded for the optimization at $\lambda_1$. Although the left hand side of \eqref{eq:disc_cond} is unknown until the solution is obtained at the target $\lambda_1$, we can use the solution at the reference $\lambda_{0}$ to derive some upper bound for the left hand side: $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and then if $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)<n\alpha$ we can also safely conclude $\boldsymbol\beta_{1,j}=0$. The goal is to find as small a bound $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ as possible, as this will maximize the number of features we are able to discard. An important technical challenge posed by the elastic net problem is that as $\lambda$ changes, both the dual function $g_\lambda$ and the feasible set $\mathcal{F}_\lambda$ change. In comparison, for the lasso the dual function changes with $\lambda$ but the feasible set remains constant.
+we can safely conclude $\boldsymbol\beta_{1,j}=0$ and the corresponding $\boldsymbol x_j$ can be discarded for the optimization at $\lambda_1$. Although the left hand side of \eqref{eq:disc_cond} is unknown until the solution is obtained at the target $\lambda_1$, we can use the solution at the reference $\lambda_{0}$ to derive some upper bound for the left hand side: $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and then if $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)<n\alpha$ we can also safely conclude $\boldsymbol\beta_{1,j}=0$. The goal is to find as small a bound $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ as possible, as this will maximize the number of features we are able to discard. An important technical challenge posed by the elastic net problem is that as $\lambda$ changes, both the dual function $g_\lambda$ and the feasible set $\mathcal{F}_\lambda$ change. In comparison, for the lasso the dual function changes with $\lambda$ but the feasible set remains constant.
 
 To simplify the construction of the upper bound, we consider the intermediate dual problem:
 
@@ -74,20 +75,20 @@ To simplify the construction of the upper bound, we consider the intermediate du
         \begin{aligned}s.t.\quad \boldsymbol\mu\in \mathcal{F}_{\lambda_1}\nonumber.
         \end{aligned}
 \end{gather}
-Compared to the original dual problem \eqref{eq:dualtheta} at the reference $\lambda_0$, the intermediate problem \eqref{eq:dualmi} optimizes the same dual function on a reshaped feasible set. On the other hand, compared to the intermediate problem, the original dual problem at the target $\lambda_1$ optimize a slightly different dual function on the same feasible set. Each pair of problems become more similar. Then we can find a region $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ based on the reference solution $\boldsymbol\mu_0$, that contains the intermediate solution ($\boldsymbol\mu_{1|0}\in \mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$) and after that find a region $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$ based on the intermediate solution $\boldsymbol\mu_{1|0}$, that contains the target solution  ($\boldsymbol\mu_1\in \mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$). Last if we find an upper bound for the double maximization problem in the two regions:
+Compared to the original dual problem \eqref{eq:dualtheta} at the reference $\lambda_0$, the intermediate problem \eqref{eq:dualmi} optimizes the same dual function on a reshaped feasible set. On the other hand, compared to the intermediate problem, the original dual problem at the target $\lambda_1$ optimizes a slightly different dual function on the same feasible set. The main idea of the proposed screening method is that it is difficult to establish bounds by directly considering the target-reference pair of problems because the dual function and feasible set are both changing, but by considering the intermediate-reference and intermediate-target pairs, the problem becomes tractable. Specifically, we can find a region $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ based on the reference solution $\boldsymbol\mu_0$, that contains the intermediate solution ($\boldsymbol\mu_{1|0}\in \mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$) and subsequently find a region $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$ based on the intermediate solution $\boldsymbol\mu_{1|0}$, that contains the target solution  ($\boldsymbol\mu_1\in \mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$). Finally, if we find an upper bound for the double maximization problem over the two regions,
 
 \begin{equation}
     \label{eq:boundbound}
     T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq \underset{\boldsymbol\mu'\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)}{\mathrm{max}}\,\underset{\boldsymbol\mu\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')}{\mathrm{max}}|\boldsymbol x_j^T\boldsymbol\theta|,
 \end{equation}
-then it automatically satisfies $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and can be safely used for screening. Note there is also a slightly different alternative method to construct an intermediate problem and the results will be briefly discussed in the appendix.
+then it automatically satisfies $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)\geq |\boldsymbol x_j^T\boldsymbol\theta_1|$ and can be safely used for screening. Note that one could also construct an intermediate problem by first changing the objective function while the feasible set remains the same; this alternative method is briefly discussed in Appendix \ref{sec:alternative-method}.
 
-We will define two quantities for simplification purpose: 
+Let $c$ and $d$ denote the following scalar quantities, which appear in several expressions throughout this section:
 \begin{equation}
     c\equiv\frac{\lambda_0-\lambda_1}{\lambda_0\lambda_1},\quad d\equiv \frac{\sqrt{\frac{\lambda_1}{\lambda_0}}+\sqrt{\frac{\lambda_0}{\lambda_1}}}{2}.
 \end{equation}
 
-In the special case when $\lambda_0=\lambda_{\max}$ as defined in \eqref{eq:lammax}, a form of the bound $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ has been derived in BEDPP for elastic net \citep{Zeng2021}:
+In the special case when $\lambda_0=\lambda_{\max}$ as defined in \eqref{eq:lammax}, a form of the bound $T_j(\lambda_{1},\lambda_{0}|\boldsymbol\mu_0)$ has previously been derived \citep{Zeng2021} and which we restate below. Thus, in rest of this section, we focus on the case when $\lambda_0<\lambda_{\max}$. Together, these two cases cover the entire solution path.
 
 \begin{theorem}
     \label{thm:0.1}
@@ -99,17 +100,15 @@ In the special case when $\lambda_0=\lambda_{\max}$ as defined in \eqref{eq:lamm
         \end{aligned}
     \end{gather}
 \end{theorem}
-Thus, in rest of the derivation, we will focus on the the case when $\lambda_0<\lambda_{\max}$. These two cases together will cover the whole solution path.
 
-\subsection{Intermediate and Target Dual Solutions Regions}
+\subsection{Intermediate and Target Dual Bounds}
+\label{sec:bounds}
 
-In this section, we will derive the two regions $\mathcal{A}^1$ and $\mathcal{A}^2$. 
-
-Considering that $\mathcal{F}_{\lambda_1}$ and $\mathcal{F}_{\lambda_0}$ are the reshaped sets of each other by a linear mapping, we can derive the following theorem:
+In this section, we derive the two regions $\mathcal{A}^1$ and $\mathcal{A}^2$ that are guaranteed to contain the intermediate and target solutions, respectively. Noting that a linear mapping governs the reshaping of the two feasible sets, $\mathcal{F}_{\lambda_1}$ and $\mathcal{F}_{\lambda_0}$, to each other, we can derive the following theorem, which bounds the intermediate solution as the feasible set changes and the dual function is held constant.
 
 \begin{theorem}
     \label{thm:1.1}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $\boldsymbol\mu_0$ is known, $\boldsymbol\mu_{1|0}$ is contained in the set $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ that is a ball with center and radius
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max})$, assuming $\boldsymbol\mu_0$ is known, $\boldsymbol\mu_{1|0}$ is contained in the set $\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ that is a ball with center and radius
     \begin{gather}
         \begin{aligned}
             \boldsymbol c_1&=\binom{\boldsymbol\theta_0}{d\boldsymbol\gamma_0}\\
@@ -118,11 +117,11 @@ Considering that $\mathcal{F}_{\lambda_1}$ and $\mathcal{F}_{\lambda_0}$ are the
     \end{gather}
 \end{theorem}
 
-Looking at the form of the dual function \eqref{eq:dualtheta}, $\boldsymbol\mu_1=(\boldsymbol\theta_1,\boldsymbol\gamma_1)$ is the projection of $(\frac{\boldsymbol y}{\lambda_1},0)$ onto $\mathcal{F}_{\lambda_1}$, while in the intermediate problem \eqref{eq:dualmi}, $\boldsymbol\mu_{1|0}=(\boldsymbol\theta_{1|0},\boldsymbol\gamma_{1|0})$ is the projection of a different point $(\frac{\boldsymbol y}{\lambda_0},0)$ onto the same set $\mathcal{F}_{\lambda_1}$. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a region that contains the target $\boldsymbol\mu_1$ can be derived:
+Looking at the form of the dual function \eqref{eq:dualtheta}, $\boldsymbol\mu_1$ is the projection of $(\frac{\boldsymbol y}{\lambda_1},0)$ onto $\mathcal{F}_{\lambda_1}$, while in the intermediate problem \eqref{eq:dualmi}, $\boldsymbol\mu_{1|0}$ is the projection of a different point $(\frac{\boldsymbol y}{\lambda_0},0)$ onto the same set $\mathcal{F}_{\lambda_1}$. Using properties of projection onto a convex set as in the enhanced dual polytope projection (EDPP) \citep{wang2013lasso}, a region that contains the target $\boldsymbol\mu_1$ can be derived.
 
 \begin{theorem}
     \label{thm:1.2}
-    For any $t\geq0$ and $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $\boldsymbol\mu_{1|0}$ is known, $\boldsymbol\mu_1$ is contained in the set $\mathcal{A}^2(\lambda_1,\lambda_0,t|\boldsymbol\mu_{1|0})$ that is a ball with center and radius
+    For any $t\geq0$ and $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max})$, assuming $\boldsymbol\mu_{1|0}$ is known, $\boldsymbol\mu_1$ is contained in the set $\mathcal{A}^2(\lambda_1,\lambda_0,t|\boldsymbol\mu_{1|0})$ that is a ball with center and radius
     \begin{gather}
         \begin{aligned}
             \boldsymbol c_2\equiv\binom{\boldsymbol c_2^\theta}{\boldsymbol c_2^\gamma}&=\binom{\frac{1}{2}(\frac{1-t}{\lambda_0}+c)\boldsymbol y+\frac{t+1}{2}\boldsymbol\theta_{1|0}}{\frac{t+1}{2}\boldsymbol\gamma_{1|0}},\\
@@ -130,23 +129,24 @@ Looking at the form of the dual function \eqref{eq:dualtheta}, $\boldsymbol\mu_1
         \end{aligned}
     \end{gather}
 \end{theorem}
+
 Note the result is valid for any $t\geq 0$. Instead of choosing a $t$ at this step as in the EDPP method, we will decide the choice of $t$ in the end of next subsection.
 
 \subsection{Upper Bound of the Double Maximization}
+\label{sec:double-bound}
 
-
-To find the bound in \eqref{eq:boundbound}, we can first consider the first maximization problem:
+To find the bound in \eqref{eq:boundbound}, let us first consider the maximization problem
 
 \begin{equation}
     \Tilde{T}_j(\lambda_1,\lambda_0|\boldsymbol\mu')\equiv\underset{\boldsymbol\mu\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')}{\mathrm{max}}|\boldsymbol x_j^T\boldsymbol\theta|,
 \end{equation}
-and it can be broken into two sub-problems:
+which can be separated into two sub-problems:
 
 \begin{equation}
     \label{eq:ttilde}
     \Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')\equiv\underset{\boldsymbol\mu\in\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu')}{\mathrm{max}}\xi \boldsymbol x_j^T\boldsymbol\theta,
 \end{equation}
-where $\xi\in\{-1,1\}$. The sub-problem \eqref{eq:ttilde} is maximizing a linear function in a ball with center $\boldsymbol c_2$ and radius $r_2$ and the maximum is easy to obtain:
+where $\xi\in\{-1,1\}$. Sub-problem \eqref{eq:ttilde} is simply a linear function over a ball with center $\boldsymbol c_2$ and radius $r_2$, so the maximum occurs at $\boldsymbol c_2 \pm r_2 \boldsymbol x_j / \norm{\boldsymbol x_j}$ and
 
 \begin{gather}
     \label{eq:ttildexi}
@@ -155,14 +155,14 @@ where $\xi\in\{-1,1\}$. The sub-problem \eqref{eq:ttilde} is maximizing a linear
         &=\xi\left( \frac{1}{2}(\frac{1-t}{\lambda_0}+c)\boldsymbol x_j^T\boldsymbol y+\frac{t+1}{2}\boldsymbol x_j^T\boldsymbol\theta'\right)+\frac{||\boldsymbol x_j||_2|1-t|}{2}\left\Vert\binom{\boldsymbol\theta'-\left(\frac{1}{\lambda_0}+\frac{c}{1-t}\right)\boldsymbol y}{\boldsymbol\gamma'}\right\Vert_2,\\
     \end{aligned}
 \end{gather}
-where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\boldsymbol v_2||_2$ for any vector $\boldsymbol v_1,\boldsymbol v_2$. There is an extra parameter $t$, and this bound will be valid for all $t\geq 0$. The maximum of $\Tilde{T}^\xi_j$ on $\mathcal{A}^1$ does not have a simple close form, so we consider an upper bound for it instead.
+where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\boldsymbol v_2||_2$ for any vectors $\boldsymbol v_1,\boldsymbol v_2$. There is an extra parameter $t$, and this bound will be valid for all $t\geq 0$. The maximum of $\Tilde{T}^\xi_j$ on $\mathcal{A}^1$ does not have a simple closed form, so we consider an upper bound for it instead.
 
 \begin{theorem}
     \label{thm:2.1}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $\boldsymbol\mu_0$ is known, if we define
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $\boldsymbol\mu_0$ is known, if we define
     \begin{align}
         \begin{gathered}
-            T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)\equiv\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\xi \boldsymbol x_j^T \boldsymbol \theta_{0}\\+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{d^2-1}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)d\boldsymbol\gamma_{0}}\right\Vert_2\\
+            T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)\equiv\frac{\frac{1-t}{\lambda_0}+c}{2}\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2}\xi \boldsymbol x_j^T \boldsymbol \theta_{0}\\+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{d^2-1}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)d\boldsymbol\gamma_{0}}\right\Vert_2,
             %&=\xi \boldsymbol x_j^T \boldsymbol c_1^\theta+||\boldsymbol x_j||_2\left(\sqrt{c(\lambda_0-\lambda_1)}||\boldsymbol c_1^\gamma||_2+\sqrt{1+c(\lambda_0-\lambda_1)}r_1\right).
         \end{gathered}
     \end{align}
@@ -172,55 +172,53 @@ where we define $0\cdot||\boldsymbol v_1+\frac{\boldsymbol v_2}{0}||_2\equiv ||\
 If we define $\boldsymbol r_0\equiv \boldsymbol y-X\boldsymbol\beta_{0}$ and $\hat{\boldsymbol y}_{0}\equiv X\boldsymbol\beta_{0}$, then the results above can be expressed in primal variables:
 
 \begin{gather}
-    \begin{aligned}
-        &T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)=  \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{0}\\
+    \begin{align*}
+        T^\xi_j(\lambda_1,&\lambda_0,t|\boldsymbol\mu_0)=  \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\xi\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0}\xi \boldsymbol x_j^T \boldsymbol r_{0}\\
         &+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{\frac{n(1-\alpha) (d^2-1)}{\lambda_0}}||\boldsymbol\beta_{0}||_2\\
         &+\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_0d^2||\boldsymbol\beta_{0}||_2^2}.
-    \end{aligned}
+    \end{align*}
 \end{gather}
 
-$T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ being the maximum of it over $\xi=-1,1$ is
+Since $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ maximizes the above over $\xi=-1,1$,
 
 \begin{gather}
     \label{eq:t}
     \begin{aligned}
-        &T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)= \left| \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0} \boldsymbol x_j^T \boldsymbol r_{0}\right|\\
+        T_j(\lambda_1,&\lambda_0,t|\boldsymbol\mu_0)= \left| \left(\frac{1-t}{2\lambda_0}+\frac{c}{2}\right)\boldsymbol x_j^T \boldsymbol y+\frac{t+1}{2\lambda_0} \boldsymbol x_j^T \boldsymbol r_{0}\right|\\
         &+\frac{t+1+|1-t|}{2}||\boldsymbol x_j||_2\sqrt{\frac{n(1-\alpha) (d^2-1)}{\lambda_0}}||\boldsymbol\beta_{0}||_2\\
         &+\frac{||\boldsymbol x_j||_2}{2\lambda_0}\sqrt{(1-t)^2||\hat{\boldsymbol y}_{0}||_2^2+c^2\lambda_0^2||\boldsymbol y||_2^2+2(1-t)c\lambda_0 \boldsymbol y^T\hat{\boldsymbol y}_{0}+(1-t)^2n(1-\alpha)\lambda_0d^2||\boldsymbol\beta_{0}||_2^2}.
     \end{aligned}
 \end{gather}
 
-Last, we need to choose a $t\geq 0$. An optimal choice will be the $t$ that minimizes $T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$. This choice results in a complicated form of $t$ and different values of $t$ have to be chosen for different $\boldsymbol x_j$, which may result in additional computation cost that outweighs the gain from screening. Instead, we choose the $t$ that minimizes a simpler objective
+Last, we need to choose a $t\geq 0$. An optimal choice will be the $t$ that minimizes $T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$. However, this choice results in a complicated form for $t$. Furthermore, this would involve choosing a different value of $t$ for each feature, which involves additional computation costs that may outweigh any gains from screening. Instead, we choose $t$ by minimizing the simpler objective
 
 \begin{equation}
-    \frac{t}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{d^2-1}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)d\boldsymbol\gamma_{0}}\right\Vert_2.
+    \frac{t}{2}||\tilde{\boldsymbol x}_j||_2\sqrt{d^2-1}||\boldsymbol\gamma_{0}||_2+\frac{||\boldsymbol x_j||_2}{2}\left\Vert\binom{(1-t)\boldsymbol\theta_{0}-\left(\frac{1-t}{\lambda_0}+c\right)\boldsymbol y}{(1-t)d\boldsymbol\gamma_{0}}\right\Vert_2,
 \end{equation}
-The solution will be
-\begin{align}
+which occurs at
+\begin{multline}
     \label{eq:tn0}
-    \begin{gathered}
-        t=0\vee\left(1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+d^2\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right.\\
-        \left.-c\lambda_0\sqrt{\frac{||\boldsymbol y||_2^2\left(||\hat{\boldsymbol y}_{0}||_2^2+d^2\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2\right)-\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}}
-        \frac{||\boldsymbol\beta_{0}||_2\sqrt{(d^2-1)\lambda_0n(1-\alpha)}}{||\hat{\boldsymbol y}_{0}||_2^2+d^2\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right).
-    \end{gathered}
-\end{align}
-This choice of $t$ does not depend on $\boldsymbol x_j$ but will still be close to the optimal choice. The last two terms in \eqref{eq:t} will be the same across all $j$'s except for a multiplier of $||\boldsymbol x_j||_2$. We will denote $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ with the $t$ defined above as $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ and it will be the final upper bound we want.
+    t=0\vee\left(1+\frac{c\lambda_0\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+d^2\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right.\\
+    \left.-c\lambda_0\sqrt{\frac{||\boldsymbol y||_2^2\left(||\hat{\boldsymbol y}_{0}||_2^2+d^2\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2\right)-\boldsymbol y^T\hat{\boldsymbol y}_{0}}{||\hat{\boldsymbol y}_{0}||_2^2+\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}}
+    \frac{||\boldsymbol\beta_{0}||_2\sqrt{(d^2-1)\lambda_0n(1-\alpha)}}{||\hat{\boldsymbol y}_{0}||_2^2+d^2\lambda_0n(1-\alpha)||\boldsymbol\beta_{0}||_2^2}\right).
+\end{multline}
+This choice of $t$ does not depend on $\boldsymbol x_j$ but will still be close to the optimal choice. \pb{\textbf{Can this be cut? Seems irrelevant:} The last two terms in \eqref{eq:t} will be the same across all $j$'s except for a multiplier of $||\boldsymbol x_j||_2$.} In the rest of the paper, we use $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ to denote $T_j(\lambda_1,\lambda_0,t|\boldsymbol\mu_0)$ using the value of $t$ given in \eqref{eq:tn0}, and it serves as the upper bound in \eqref{eq:boundbound}.
 
 \subsection{Safe Rule and Adaptive Safe Screening}
 
-All the previous derivations can be summarized in the following safe rule that discard features in the problem given a previous solution:
+The derivations in sections \ref{sec:formulation}-\ref{sec:double-bound} can be summarized in the following safe rule that discards features given a previous solution:
 
 \begin{theorem}
     \label{thm:rule}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max}]$, $j=1,2,...,p$ and assuming $\boldsymbol\mu_0$ is known,
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max}]$, $j=1,2,...,p$ and assuming $\boldsymbol\mu_0$ is known,
     \begin{enumerate}
         \item If $\lambda_0=\lambda_{\max}$: $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ is given Theorem \ref{thm:0.1}. Else $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ is given in \eqref{eq:t},\eqref{eq:tn0}.
         \item If $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)<n\alpha$, then $[\boldsymbol\beta_{1}]_j=0$.
     \end{enumerate}
 \end{theorem}
-Note no matter whether $\lambda_0=\lambda_{\max}$ or not, the upper bound $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ will becomes the upper bound in EDPP rule when $\alpha$ goes to 1. Our proposed rule can be considered as a generalization of EDPP rule with no impact on the performance in the case when $\alpha=1$.
+Note that no matter whether $\lambda_0=\lambda_{\max}$ or not, the upper bound $T_j(\lambda_1,\lambda_0|\boldsymbol\mu_0)$ is equal to the upper bound in the EDPP rule when $\alpha=1$. Our proposed rule can therefore be considered as a generalization of EDPP rule, and the two rules are equivalent in the special case of the lasso.
 
-An algorithm with adaptive safe screening framework \citep{wang2021adaptive} using the proposed safe screening rule can be built to solve the elastic net problem along a path of $L$ tuning parameter values $\lambda_1,...,\lambda_L$ as described below:
+An algorithm utilizing the adaptive safe screening framework \citep{wang2021adaptive} and incorporating the proposed safe screening rule can be built to solve the elastic net problem along a path of $L$ tuning parameter values $\lambda_1,...,\lambda_L$ as described below:
 
 \begin{algorithm}[H]
   \label{alg:path}
@@ -228,12 +226,12 @@ An algorithm with adaptive safe screening framework \citep{wang2021adaptive} usi
     \SetAlgoLined
     \Input{$\{\boldsymbol x_j\}_{j=1}^p, \boldsymbol y,\alpha,  \lambda_{1},...,\lambda_{L}$}
     \BlankLine
-    \Initialize{$\{\boldsymbol x_j^T\boldsymbol y\}_{j=1}^p$, $\lambda_{ref}=\lambda_0=\lambda_{max}$}
+    \Initialize{$\{\boldsymbol x_j^T\boldsymbol y\}_{j=1}^p$, $\lambda_\textrm{ref}=\lambda_0=\lambda_\textrm{max}$}
     
     \For{$l\xleftarrow{}$ 1 \KwTo L}{
-        Safe Screening: $\mathcal{S}_{l}\xleftarrow{}\{j:T_j(\lambda_l,\lambda_{ref}|\boldsymbol\mu_{ref})\geq n\alpha\}$ (features not discarded by Theorem \ref{thm:rule}).
+        Safe Screening: $\mathcal{S}_{l}\xleftarrow{}\{j:T_j(\lambda_l,\lambda_\textrm{ref}|\boldsymbol\mu_\textrm{ref})\geq n\alpha\}$ (features not discarded by Theorem \ref{thm:rule}).
         
-        Strong Screening: $\mathcal{R}_{l}\xleftarrow{}\{j\in \mathcal{S}_{l}:x_j$ not discarded by any addition non-safe screening$\}$.
+        Strong Screening: $\mathcal{R}_{l}\xleftarrow{}\{j\in \mathcal{S}_{l}:x_j$ not discarded by any addition non-safe screening$\}$.\label{step:strong}
         
         \Initialize{$\boldsymbol \beta_l=\boldsymbol \beta_{l-1},\boldsymbol  r_{l}=\boldsymbol r_{l-1}$}
         
@@ -249,41 +247,39 @@ An algorithm with adaptive safe screening framework \citep{wang2021adaptive} usi
             }
         }
         \uIf{Update conditions met}{
-            $\lambda_{ref}=\lambda_{l}$
+            $\lambda_\textrm{ref}=\lambda_{l}$
             
-            Compute and save: $\{\boldsymbol x_j^T\boldsymbol r_{ref}\}_{j=1}^p, ||\boldsymbol\beta_{ref}||_2$.}
+            Compute and save: $\{\boldsymbol x_j^T\boldsymbol r_\textrm{ref}\}_{j=1}^p, ||\boldsymbol\beta_\textrm{ref}||_2$.}
             
     }
     \Output{$\{\boldsymbol\beta_l\}_{l=1}^L$}
-    \caption{Pathwise elastic algorithm with adaptive safe screening}
+    \caption{Pathwise elastic net algorithm with adaptive safe screening}
 \end{algorithm}
 
-Assuming the typical setting of a high-dimensional data set where $p\xrightarrow[]{}\infty$, the computational cost in safe screening (Theorem \ref{thm:0.1} or \eqref{eq:t},\eqref{eq:tn0}) is approximately the cost of computing $\boldsymbol x_j^T\boldsymbol y,\boldsymbol x_j^T\boldsymbol x_*,\boldsymbol x_j^T\boldsymbol r_{ref}$ and $||\boldsymbol\beta_{ref}||_2$. The first two terms only need to be computed once and can be reused for the whole path. The latter two only need to be updated when updating the reference and can be reused until next update of reference. The rest steps of the safe screening can be considered as almost free.
+Assuming the typical setting of a high-dimensional data set where $p\xrightarrow[]{}\infty$, the computational cost in safe screening (Theorem \ref{thm:0.1} or \eqref{eq:t},\eqref{eq:tn0}) is approximately the cost of computing $\boldsymbol x_j^T\boldsymbol y,\boldsymbol x_j^T\boldsymbol x_*,\boldsymbol x_j^T\boldsymbol r_\textrm{ref}$ and $||\boldsymbol\beta_\textrm{ref}||_2$. The first two terms only need to be computed once and can be reused for the whole path. The latter two only need to be updated when updating the reference and can be reused until it is updated. The remaining steps of safe screening are essentially free of cost, as they involve minimal computation.
 
-In the step of strong screening, any addition screening methods can be implemented regardless of their safeness. For example, it can be active set cycling \citep{lee2007efficient}, strong rule \citep{Tibshirani2012}, no addition screening (simply $\mathcal{R}_l=\mathcal{S}_l$) or combination of screening methods. We will use a combination of strong rule on top of active set cycling in this steps as experiments show this can provide most speed up. Active set cycling is a simple idea that discards all the features that have zero coefficients in the previous solution $\lambda_{l-1}$ and does not require any computation. Strong rule discards feature $j$ if
+In step \ref{step:strong}, any screening methods can be implemented regardless of whether or not they are safe. For example, active set cycling \citep{lee2007efficient}, strong rule \citep{Tibshirani2012}, no additional screening (simply $\mathcal{R}_l=\mathcal{S}_l$) or any combination of screening methods. In our numerical experiments, we use a combination of strong rules on top of active set cycling as experiments show this provide the greatest benefit. Active set cycling is a simple idea that discards all the features that have zero coefficients in the previous solution $\lambda_{l-1}$ and does not require any computation. The strong rule discards feature $j$ if
 
 \begin{equation}
     \label{eq:strong}
-    \boldsymbol x_j^T\boldsymbol r_{ref}<\alpha(2\lambda_l-\lambda_{ref}).
+    \boldsymbol x_j^T\boldsymbol r_\textrm{ref}<\alpha(2\lambda_l-\lambda_\textrm{ref}).
 \end{equation}
-Since $\boldsymbol x_j^T\boldsymbol r_{ref}$ is already computed in the safe screening step, strong rule can also considered as free. If non-safe screening methods are used, after the convergence of the elastic net solving algorithm, a check on the KKT conditions \eqref{eq:kkt} is required. Because KKT conditions are sufficient condition for the solution, if the check passes then there will be no incorrect discard. Else, we need to add the features that violate the KKT conditions into the problem and solve the problem. Because there is only a finite number of features, the check will pass after finite number if iteration. Moreover, safe screening step can narrow down the range of features that need to be checked from $1,..,p$ to $\mathcal{S}_l$ and thus make this step much faster.
+Since $\boldsymbol x_j^T\boldsymbol r_\textrm{ref}$ is already computed in the safe screening step, the strong rule can also considered as free. If non-safe screening methods are used, after the convergence of the elastic net solving algorithm, a check on the KKT conditions \eqref{eq:kkt} is required. Because KKT conditions are sufficient condition for the solution, if the check passes then this establishes that no features were incorrectly discarded. Otherwise, we need to add any features that violate the KKT conditions and re-solve the problem. Because there are only a finite number of features, this post-convergence check will eventually pass. The key point, as it pertains to this work, is that safe screening step can greatly narrow down the features that need to be checked from $1,..,p$ to $\mathcal{S}_l$ and thus make any post-convergence checks proceed much faster.
 
-Any elastic net solving algorithm can be used to solve the reduced problem in $\mathcal{R}_l$ as long as the algorithm converges to the minimum of the reduced problem. We choose pathwise coordinate descent \citep{friedman2007pathwise} because it has shown to outperform other algorithms especially in high-dimensional cases.
+In addition, any elastic net solving algorithm can be used to solve the reduced problem in $\mathcal{R}_l$ as long as the algorithm converges to the minimum of the reduced problem. We choose pathwise coordinate descent \citep{friedman2007pathwise} because it has shown to outperform other algorithms especially in high-dimensional cases.
 
-A naive choice of condition for updating safe screening reference will be always update and screening at any $\lambda_l$ is based on $\lambda_{l-1}$, which is the idea of sequential screening. Since we have shown almost all the cost of safe screening is the cost of updating, we may want to use the idea of adaptive screening \citep{wang2021adaptive} and reuse a reference $\lambda_{ref}$ multiple times until $\lambda_l$ such that
+A simple choice of when to update the safe screening reference would be to update at every point along the path (sequential screening). However, since almost all the cost of safe screening comes from updating the reference, it is mre efficient to use the idea of adaptive screening \citep{wang2021adaptive} and reuse the reference at $\lambda_\textrm{ref}$ multiple times until reaching a $\lambda_l$ such that
 
 \begin{equation}
-    (l-ref-1)|\mathcal{S}_{l}|-\sum_{l'=ref+1}^{l-1}|\mathcal{S}_{l'}|<p
+    (l-\textrm{ref}-1)|\mathcal{S}_{l}|-\sum_{l'=\textrm{ref}+1}^{l-1}|\mathcal{S}_{l'}|<p,
 \end{equation}
-and update the reference to $\lambda_l$ at that point. This condition predicts the timing of updating that best optimizes the total cost of solving the whole path and has shown to outperform other state-of-the-art screening methods in lasso problem. We will show it provides significant speed up in elastic problem as well, compared to the naive sequential updating.
+then updating the reference to $\lambda_l$ at that point. This condition is based on predicting the updating time that optimizes the cost of solving the whole path and has shown to outperform other state-of-the-art screening methods for solving the lasso problem. In the following section, we show that it provides significant speed up for the elastic net as well.
 
 \section{Experiments}
 
 We compared our proposed adaptive screening method (Adaptive), the sequential version of our proposed screening method (Sequential) and sequential strong rule for elastic net (SSR) in both simulated data sets and real data sets. SSR is the most efficient existing screening method for elastic net problem. Active cycling is incorporated into all methods. The elastic net solving algorithm is chosen to be the pathwise coordinate descent. All the methods are implemented and tested in the \textbf{biglasso} R package.
 
 \subsection{Simulation Study}
-
-
 
 The data is simulated from the model: $y=X\beta+0.1\epsilon$. The elements of $X$ and $\epsilon$ are sampled i.i.d from $N(0,1)$. The coefficient vector $\beta$ contains $s$ randomly selected elements equally spaced between $[-\beta_{\max},\beta_{\max}]$, with the remaining $p-s$ elements equal to zero. An elastic net problem is solved along a path of $L$ $\lambda$ values equally spaced on log scale between $(\lambda_{\max},\lambda_{\min}]$ where $\lambda_{\max}$ is determined by data. Each setting is replicated $10$ times to calculate the average time needed to solve the coefficient path. By default we set $p=10,000$, $n=1,000$, $s=20$, $\beta_{\max}=1$, $\alpha=0.9$, $L=100$, $\lambda_{\min}/\lambda_{\max}=0.05$. We consider the following cases where one of the variables above is varying at a time:
 
@@ -648,7 +644,7 @@ Take derivative with respect to $\boldsymbol z$:
 
 \begin{theorem}
     \label{thm:2.2}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, if $\boldsymbol y\neq \boldsymbol 0$,
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $(\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})$ is known, if $\boldsymbol y\neq \boldsymbol 0$,
     \begin{gather}
         \begin{aligned}
             T^\xi_j(\lambda_1,\lambda_0|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\equiv\underset{t\geq 0}{\mathrm{min}}\,T^\xi_j(\lambda_1,\lambda_0,t|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})=T^\xi_j(\lambda_1,\lambda_0,t^*|\boldsymbol\theta_{\lambda_0},\boldsymbol\gamma_{\lambda_0})\\
@@ -871,6 +867,7 @@ Else, $t^*=0$ if $\xi\boldsymbol x_j^T\hat{\boldsymbol y}_{\lambda_0}=-\lambda_0
 \fi
 
 \section{Alternative Method}
+\label{sec:alternative-method}
 
 The alternative method considers an alternative intermediate problem where the feasible set remains the same as $\mathcal{F}_{\lambda_0}$ in the original problem at $\lambda_0$ but the objective function changes to $g_{\lambda_1}$:
 
@@ -885,7 +882,7 @@ We will only show the results and omit the proofs, as the proofs are very simila
 
 \begin{theorem}
     \label{thm:1.1.alt}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $\boldsymbol\mu_0$ is known, $\boldsymbol\mu_{1|0}$ is contained in a ball with center and radius
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max})$, assuming $\boldsymbol\mu_0$ is known, $\boldsymbol\mu_{1|0}$ is contained in a ball with center and radius
     \begin{gather}
         \begin{aligned}
             \boldsymbol c_1\equiv\binom{\boldsymbol c_1^\theta}{\boldsymbol c_1^\gamma}&=\binom{\frac{1}{2}c(1-\rho)\boldsymbol y+(1+\frac{1}{2}c\rho\lambda_0)\boldsymbol\theta_{0}}{(1+\frac{1}{2}c\rho\lambda_0)\boldsymbol\gamma_{0}},\\
@@ -916,7 +913,7 @@ Last, both $\boldsymbol\mu_{1|0}$ and $\boldsymbol\mu_1$ are the optimizer of co
 
 \begin{theorem}
     \label{thm:1.3.alt}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, assuming $\boldsymbol\mu_{1|0}$ is known, $\boldsymbol\mu_1$ is contained in the set $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$ such that $\boldsymbol\theta_{\lambda_1}$ is contained in a ball with center and radius
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max})$, assuming $\boldsymbol\mu_{1|0}$ is known, $\boldsymbol\mu_1$ is contained in the set $\mathcal{A}^2(\lambda_1,\lambda_0|\boldsymbol\mu_{1|0})$ such that $\boldsymbol\theta_{\lambda_1}$ is contained in a ball with center and radius
     \begin{gather}
         \begin{aligned}
             c_2&=\boldsymbol\theta_{1|0}\\
@@ -935,7 +932,7 @@ Next, we need to maximize $\Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')$
 
 \begin{theorem}
     \label{thm:2.1.alt}
-    For any $\lambda_1<\lambda_{0}\in (0,\lambda_{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $\boldsymbol\mu_0$ is known,
+    For any $\lambda_1<\lambda_{0}\in (0,\lambda_\textrm{max})$, $j=1,2,...,p$ and $\xi=-1,1$, assuming $\boldsymbol\mu_0$ is known,
     \begin{gather}
         \begin{aligned}
             T^\xi_j&\equiv\underset{\boldsymbol\mu'\in\mathcal{A}^1(\lambda_1,\lambda_0|\boldsymbol\mu_0)}{\mathrm{max}}\Tilde{T}^\xi_j(\lambda_1,\lambda_0|\boldsymbol\mu')\\
